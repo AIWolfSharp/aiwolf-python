@@ -14,7 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""judge module."""
 from __future__ import annotations
 
 from typing import TypedDict
@@ -31,17 +31,55 @@ class _Judge(TypedDict):
 
 
 class Judge:
+    """The judgement whether the player is a human or a werewolf."""
+
     def __init__(self, agent: Agent = C.AGENT_NONE, day: int = -1, target: Agent = C.AGENT_NONE, result: Species = Species.UNC) -> None:
-        self.agent: Agent = agent
-        self.day: int = day
-        self.target: Agent = target
-        self.result: Species = result
+        """Initialize a new instance of Judge.
+
+        Args:
+            agent(optional): The agent that judged. Defaults to C.AGENT_NONE.
+            day(optional): The date of the judgement. Defaults to -1.
+            target(optional): The judged agent. Defaults to C.AGENT_NONE.
+            result(optional): The result of the judgement. Defaults to Species.UNC.
+        """
+        self._agent: Agent = agent
+        self._day: int = day
+        self._target: Agent = target
+        self._result: Species = result
 
     @staticmethod
-    def compile(judge0: _Judge) -> Judge:
+    def compile(judge: _Judge) -> Judge:
+        """Convert a _Judge into the corresponding Judge.
+
+        Args:
+            judge: The _Judge to be converted.
+
+        Returns:
+            The Judge converted from the given _Judge.
+        """
         j: Judge = Judge()
-        j.agent = Agent(judge0['agent'])
-        j.day = judge0['day']
-        j.target = Agent(judge0['target'])
-        j.result = Species[judge0['result']]
+        j._agent = Agent(judge['agent'])
+        j._day = judge['day']
+        j._target = Agent(judge['target'])
+        j._result = Species[judge['result']]
         return j
+
+    @property
+    def agent(self) -> Agent:
+        """The agent that judged."""
+        return self._agent
+
+    @property
+    def day(self) -> int:
+        """The date of the judgement."""
+        return self._day
+
+    @property
+    def target(self) -> Agent:
+        """The judged agent."""
+        return self._target
+
+    @property
+    def result(self) -> Species:
+        """The result of the judgement."""
+        return self._result
