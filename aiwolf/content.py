@@ -30,11 +30,11 @@ class Content:
     """Content class expressing the content of an uteerance."""
 
     @staticmethod
-    def get_contents(input: str) -> List[Content]:
-        return [Content.compile(s) for s in Content.get_content_strings(input)]
+    def _get_contents(input: str) -> List[Content]:
+        return [Content.compile(s) for s in Content._get_content_strings(input)]
 
     @staticmethod
-    def get_content_strings(input: str) -> List[str]:
+    def _get_content_strings(input: str) -> List[str]:
         strings: List[str] = []
         length: int = len(input)
         stack_ptr: int = 0
@@ -56,90 +56,130 @@ class Content:
         Args:
             builder: A ContentBuilder used for initialization.
         """
-        self.topic: Topic = builder.topic
+        self._topic: Topic = builder._topic
+        self._subject: Agent = builder._subject
+        self._target: Agent = builder._target
+        self._role: Role = builder._role
+        self._result: Species = builder._result
+        self._utterance: Utterance = builder._utterance
+        self._operator: Operator = builder._operator
+        self._content_list: List[Content] = builder._content_list
+        self._day: int = builder._day
+        self._text: str = ""
+        self._complete_inner_subject()
+        self._normalize_text()
+
+    @property
+    def topic(self) -> Topic:
         """The topic of this Content."""
-        self.subject: Agent = builder.subject
+        return self._topic
+
+    @property
+    def subject(self) -> Agent:
         """The Agent that is the subject of this Content."""
-        self.target: Agent = builder.target
+        return self._subject
+
+    @property
+    def target(self) -> Agent:
         """The Agent that is the object of this Content."""
-        self.role: Role = builder.role
+        return self._target
+
+    @property
+    def role(self) -> Role:
         """The role this Content refers to."""
-        self.result: Species = builder.result
+        return self._role
+
+    @property
+    def result(self) -> Species:
         """The species this Content refers to."""
-        self.utterance: Utterance = builder.utterance
+        return self._result
+
+    @property
+    def utterance(self) -> Utterance:
         """The utterance this Content refers to."""
-        self.operator: Operator = builder.operator
+        return self._utterance
+
+    @property
+    def operator(self) -> Operator:
         """The operator in this Content."""
-        self.content_list: List[Content] = builder.content_list
+        return self._operator
+
+    @property
+    def content_list(self) -> List[Content]:
         """The list of the operands in this Content."""
-        self.day: int = builder.day
+        return self._content_list
+
+    @property
+    def day(self) -> int:
         """The date added to the operand in this Content."""
-        self.text: str = ""
+        return self._day
+
+    @property
+    def text(self) -> str:
         """The text representing this Content."""
-        self.complete_inner_subject()
-        self.normalize_text()
+        return self._text
 
-    def complete_inner_subject(self) -> None:
-        if not self.content_list:
+    def _complete_inner_subject(self) -> None:
+        if not self._content_list:
             return
-        self.content_list = [self.process_inner_content(c) for c in self.content_list]
+        self._content_list = [self._process_inner_content(c) for c in self._content_list]
 
-    def process_inner_content(self, inner: Content) -> Content:
-        if inner.subject is C.AGENT_UNSPEC:
-            if self.operator is Operator.INQUIRE or self.operator is Operator.REQUEST:
-                return inner.copy_and_replace_subject(self.target)
-            if self.subject is not C.AGENT_UNSPEC:
-                return inner.copy_and_replace_subject(self.subject)
-        inner.complete_inner_subject()
+    def _process_inner_content(self, inner: Content) -> Content:
+        if inner._subject is C.AGENT_UNSPEC:
+            if self._operator is Operator.INQUIRE or self._operator is Operator.REQUEST:
+                return inner._copy_and_replace_subject(self._target)
+            if self._subject is not C.AGENT_UNSPEC:
+                return inner._copy_and_replace_subject(self._subject)
+        inner._complete_inner_subject()
         return inner
 
-    def copy_and_replace_subject(self, new_subject: Agent) -> Content:
+    def _copy_and_replace_subject(self, new_subject: Agent) -> Content:
         c: Content = self.clone()
-        c.subject = new_subject
-        c.complete_inner_subject()
-        c.normalize_text()
+        c._subject = new_subject
+        c._complete_inner_subject()
+        c._normalize_text()
         return c
 
-    def normalize_text(self) -> None:
-        str_sub: str = "" if self.subject is C.AGENT_UNSPEC else "ANY " if self.subject is C.AGENT_ANY else str(self.subject)+" "
-        str_tgt: str = "ANY" if self.target is C.AGENT_ANY or self.target is C.AGENT_UNSPEC else str(self.target)
-        if self.topic is not Topic.OPERATOR:
-            if self.topic is Topic.DUMMY:
-                self.text = ""
-            elif self.topic is Topic.Skip:
-                self.text = Utterance.SKIP
-            elif self.topic is Topic.Over:
-                self.text = Utterance.OVER
-            elif self.topic is Topic.AGREE or self.topic is Topic.DISAGREE:
-                self.text = str_sub + " ".join([self.topic.value, "TALK" if type(self.utterance) is Talk else "WHISPER", str(self.utterance.day), str(self.utterance.idx)])
-            elif self.topic is Topic.ESTIMATE or self.topic is Topic.COMINGOUT:
-                self.text = str_sub + " ".join([self.topic.value, str_tgt, self.role.value])
-            elif self.topic is Topic.DIVINED or self.topic is Topic.IDENTIFIED:
-                self.text = str_sub + " ".join([self.topic.value, str_tgt, self.result.value])
-            elif self.topic is Topic.ATTACK or self.topic is Topic.ATTACKED or self.topic is Topic.DIVINATION or self.topic is Topic.GUARD\
-                    or self.topic is Topic.GUARDED or self.topic is Topic.VOTE or self.topic is Topic.VOTED:
-                self.text = str_sub + " ".join([self.topic.value, str_tgt])
+    def _normalize_text(self) -> None:
+        str_sub: str = "" if self._subject is C.AGENT_UNSPEC else "ANY " if self._subject is C.AGENT_ANY else str(self._subject)+" "
+        str_tgt: str = "ANY" if self._target is C.AGENT_ANY or self._target is C.AGENT_UNSPEC else str(self._target)
+        if self._topic is not Topic.OPERATOR:
+            if self._topic is Topic.DUMMY:
+                self._text = ""
+            elif self._topic is Topic.Skip:
+                self._text = Utterance.SKIP
+            elif self._topic is Topic.Over:
+                self._text = Utterance.OVER
+            elif self._topic is Topic.AGREE or self._topic is Topic.DISAGREE:
+                self._text = str_sub + " ".join([self._topic.value, "TALK" if type(self._utterance) is Talk else "WHISPER", str(self._utterance.day), str(self._utterance.idx)])
+            elif self._topic is Topic.ESTIMATE or self._topic is Topic.COMINGOUT:
+                self._text = str_sub + " ".join([self._topic.value, str_tgt, self._role.value])
+            elif self._topic is Topic.DIVINED or self._topic is Topic.IDENTIFIED:
+                self._text = str_sub + " ".join([self._topic.value, str_tgt, self._result.value])
+            elif self._topic is Topic.ATTACK or self._topic is Topic.ATTACKED or self._topic is Topic.DIVINATION or self._topic is Topic.GUARD\
+                    or self._topic is Topic.GUARDED or self._topic is Topic.VOTE or self._topic is Topic.VOTED:
+                self._text = str_sub + " ".join([self._topic.value, str_tgt])
         else:
-            if self.operator is Operator.REQUEST or self.operator is Operator.INQUIRE:
-                self.text = str_sub + " ".join([self.operator.value, str_tgt, "("+Content.strip_subject(self.content_list[0].text) +
-                                                ")" if self.content_list[0].subject is self.target else "("+self.content_list[0].text+")"])
-            elif self.operator is Operator.BECAUSE or self.operator is Operator.XOR:
-                self.text = str_sub + " ".join([self.operator.value] + ["("+Content.strip_subject(self.content_list[i].text) +
-                                                                          ")" if self.content_list[i].subject is self.subject else "("+self.content_list[i].text+")" for i in [0, 1]])
-            elif self.operator is Operator.AND or self.operator is Operator.OR:
-                self.text = str_sub + " ".join([self.operator.value] + ["("+Content.strip_subject(c.text)+")" if c.subject is self.subject else "("+c.text+")" for c in self.content_list])
-            elif self.operator is Operator.NOT:
-                self.text = str_sub + " ".join([self.operator.value, "("+Content.strip_subject(self.content_list[0].text) +
-                                                ")" if self.content_list[0].subject is self.subject else "("+self.content_list[0].text+")"])
-            elif self.operator is Operator.DAY:
-                self.text = str_sub + " ".join([self.operator.value, str(self.day), "("+Content.strip_subject(self.content_list[0].text) +
-                                                ")" if self.content_list[0].subject is self.subject else "("+self.content_list[0].text+")"])
+            if self._operator is Operator.REQUEST or self._operator is Operator.INQUIRE:
+                self._text = str_sub + " ".join([self._operator.value, str_tgt, "("+Content._strip_subject(self._content_list[0]._text) +
+                                                ")" if self._content_list[0]._subject is self._target else "("+self._content_list[0]._text+")"])
+            elif self._operator is Operator.BECAUSE or self._operator is Operator.XOR:
+                self._text = str_sub + " ".join([self._operator.value] + ["("+Content._strip_subject(self._content_list[i]._text) +
+                                                                          ")" if self._content_list[i]._subject is self._subject else "("+self._content_list[i]._text+")" for i in [0, 1]])
+            elif self._operator is Operator.AND or self._operator is Operator.OR:
+                self._text = str_sub + " ".join([self._operator.value] + ["("+Content._strip_subject(c._text)+")" if c._subject is self._subject else "("+c._text+")" for c in self._content_list])
+            elif self._operator is Operator.NOT:
+                self._text = str_sub + " ".join([self._operator.value, "("+Content._strip_subject(self._content_list[0]._text) +
+                                                ")" if self._content_list[0]._subject is self._subject else "("+self._content_list[0]._text+")"])
+            elif self._operator is Operator.DAY:
+                self._text = str_sub + " ".join([self._operator.value, str(self._day), "("+Content._strip_subject(self._content_list[0]._text) +
+                                                ")" if self._content_list[0]._subject is self._subject else "("+self._content_list[0]._text+")"])
 
-    strip_pattern: Pattern[str] = re.compile(r"^(Agent\[\d+\]|ANY|)\s*([A-Z]+.*)$")
+    _strip_pattern: Pattern[str] = re.compile(r"^(Agent\[\d+\]|ANY|)\s*([A-Z]+.*)$")
 
     @staticmethod
-    def strip_subject(input: str) -> str:
-        m: Optional[Match[str]] = Content.strip_pattern.match(input)
+    def _strip_subject(input: str) -> str:
+        m: Optional[Match[str]] = Content._strip_pattern.match(input)
         if m:
             return m.group(2)
         return input
@@ -151,32 +191,32 @@ class Content:
             The cloned Content.
         """
         content: Content = Content(ContentBuilder())
-        content.topic = self.topic
-        content.subject = self.subject
-        content.target = self.target
-        content.role = self.role
-        content.result = self.result
-        content.utterance = self.utterance
-        content.operator = self.operator
-        content.content_list = self.content_list
-        content.day = self.day
-        content.text = self.text
+        content._topic = self._topic
+        content._subject = self._subject
+        content._target = self._target
+        content._role = self._role
+        content._result = self._result
+        content._utterance = self._utterance
+        content._operator = self._operator
+        content._content_list = self._content_list
+        content._day = self._day
+        content._text = self._text
         return content
 
-    regex_agent: str = r"\s+(Agent\[\d+\]|ANY)"
-    regex_subject: str = r"^(Agent\[\d+\]|ANY|)\s*"
-    regex_talk: str = r"\s+([A-Z]+)\s+day(\d+)\s+ID:(\d+)"
-    regex_role_species: str = r"\s+([A-Z]+)"
-    regex_paren: str = r"(\(.*\))"
-    regex_digit: str = r"(\d+)"
-    agree_pattern: Pattern[str] = re.compile(regex_subject + "(AGREE|DISAGREE)" + regex_talk + "$")
-    estimate_pattern: Pattern[str] = re.compile(regex_subject + "(ESTIMATE|COMINGOUT)" + regex_agent + regex_role_species + "$")
-    divined_pattern: Pattern[str] = re.compile(regex_subject + "(DIVINED|IDENTIFIED)" + regex_agent + regex_role_species + "$")
-    attack_pattern: Pattern[str] = re.compile(regex_subject + "(ATTACK|ATTACKED|DIVINATION|GUARD|GUARDED|VOTE|VOTED)" + regex_agent + "$")
-    request_pattern: Pattern[str] = re.compile(regex_subject + "(REQUEST|INQUIRE)" + regex_agent + r"\s+" + regex_paren + "$")
-    because_pattern: Pattern[str] = re.compile(regex_subject + r"(BECAUSE|AND|OR|XOR|NOT|REQUEST)\s+" + regex_paren + "$")
-    day_pattern: Pattern[str] = re.compile(regex_subject + r"DAY\s+" + regex_digit + r"\s+" + regex_paren + "$")
-    skip_pattern: Pattern[str] = re.compile("^(Skip|Over)$")
+    _regex_agent: str = r"\s+(Agent\[\d+\]|ANY)"
+    _regex_subject: str = r"^(Agent\[\d+\]|ANY|)\s*"
+    _regex_talk: str = r"\s+([A-Z]+)\s+day(\d+)\s+ID:(\d+)"
+    _regex_role_species: str = r"\s+([A-Z]+)"
+    _regex_paren: str = r"(\(.*\))"
+    _regex_digit: str = r"(\d+)"
+    _agree_pattern: Pattern[str] = re.compile(_regex_subject + "(AGREE|DISAGREE)" + _regex_talk + "$")
+    _estimate_pattern: Pattern[str] = re.compile(_regex_subject + "(ESTIMATE|COMINGOUT)" + _regex_agent + _regex_role_species + "$")
+    _divined_pattern: Pattern[str] = re.compile(_regex_subject + "(DIVINED|IDENTIFIED)" + _regex_agent + _regex_role_species + "$")
+    _attack_pattern: Pattern[str] = re.compile(_regex_subject + "(ATTACK|ATTACKED|DIVINATION|GUARD|GUARDED|VOTE|VOTED)" + _regex_agent + "$")
+    _request_pattern: Pattern[str] = re.compile(_regex_subject + "(REQUEST|INQUIRE)" + _regex_agent + r"\s+" + _regex_paren + "$")
+    _because_pattern: Pattern[str] = re.compile(_regex_subject + r"(BECAUSE|AND|OR|XOR|NOT|REQUEST)\s+" + _regex_paren + "$")
+    _day_pattern: Pattern[str] = re.compile(_regex_subject + r"DAY\s+" + _regex_digit + r"\s+" + _regex_paren + "$")
+    _skip_pattern: Pattern[str] = re.compile("^(Skip|Over)$")
 
     @staticmethod
     def compile(text: str) -> Content:
@@ -189,61 +229,61 @@ class Content:
             The Content converted from the given text.
         """
         trimmed: str = text.strip()
-        m_agree: Optional[Match[str]] = Content.agree_pattern.match(trimmed)
-        m_estimate: Optional[Match[str]] = Content.estimate_pattern.match(trimmed)
-        m_divined: Optional[Match[str]] = Content.divined_pattern.match(trimmed)
-        m_attack: Optional[Match[str]] = Content.attack_pattern.match(trimmed)
-        m_request: Optional[Match[str]] = Content.request_pattern.match(trimmed)
-        m_because: Optional[Match[str]] = Content.because_pattern.match(trimmed)
-        m_day: Optional[Match[str]] = Content.day_pattern.match(trimmed)
-        m_skip: Optional[Match[str]] = Content.skip_pattern.match(trimmed)
+        m_agree: Optional[Match[str]] = Content._agree_pattern.match(trimmed)
+        m_estimate: Optional[Match[str]] = Content._estimate_pattern.match(trimmed)
+        m_divined: Optional[Match[str]] = Content._divined_pattern.match(trimmed)
+        m_attack: Optional[Match[str]] = Content._attack_pattern.match(trimmed)
+        m_request: Optional[Match[str]] = Content._request_pattern.match(trimmed)
+        m_because: Optional[Match[str]] = Content._because_pattern.match(trimmed)
+        m_day: Optional[Match[str]] = Content._day_pattern.match(trimmed)
+        m_skip: Optional[Match[str]] = Content._skip_pattern.match(trimmed)
         content: Content = Content(SkipContentBuilder())
         if m_skip:
-            content.topic = Topic[m_skip.group(1)]
+            content._topic = Topic[m_skip.group(1)]
         elif m_agree:
-            content.subject = Agent.compile(m_agree.group(1))
-            content.topic = Topic[m_agree.group(2)]
+            content._subject = Agent.compile(m_agree.group(1))
+            content._topic = Topic[m_agree.group(2)]
             if UtteranceType[m_agree.group(3)] is UtteranceType.TALK:
-                content.utterance = Talk(int(m_agree.group(5)), C.AGENT_NONE, int(m_agree.group(4)), "", 0)
+                content._utterance = Talk(int(m_agree.group(5)), C.AGENT_NONE, int(m_agree.group(4)), "", 0)
             else:
-                content.utterance = Whisper(int(m_agree.group(5)), C.AGENT_NONE, int(m_agree.group(4)), "", 0)
+                content._utterance = Whisper(int(m_agree.group(5)), C.AGENT_NONE, int(m_agree.group(4)), "", 0)
         elif m_estimate:
-            content.subject = Agent.compile(m_estimate.group(1))
-            content.topic = Topic[m_estimate.group(2)]
-            content.target = Agent.compile(m_estimate.group(3))
-            content.role = Role[m_estimate.group(4)]
+            content._subject = Agent.compile(m_estimate.group(1))
+            content._topic = Topic[m_estimate.group(2)]
+            content._target = Agent.compile(m_estimate.group(3))
+            content._role = Role[m_estimate.group(4)]
         elif m_divined:
-            content.subject = Agent.compile(m_divined.group(1))
-            content.topic = Topic[m_divined.group(2)]
-            content.target = Agent.compile(m_divined.group(3))
-            content.result = Species[m_divined.group(4)]
+            content._subject = Agent.compile(m_divined.group(1))
+            content._topic = Topic[m_divined.group(2)]
+            content._target = Agent.compile(m_divined.group(3))
+            content._result = Species[m_divined.group(4)]
         elif m_attack:
-            content.subject = Agent.compile(m_attack.group(1))
-            content.topic = Topic[m_attack.group(2)]
-            content.target = Agent.compile(m_attack.group(3))
+            content._subject = Agent.compile(m_attack.group(1))
+            content._topic = Topic[m_attack.group(2)]
+            content._target = Agent.compile(m_attack.group(3))
         elif m_request:
-            content.topic = Topic.OPERATOR
-            content.subject = Agent.compile(m_request.group(1))
-            content.operator = Operator[m_request.group(2)]
-            content.target = Agent.compile(m_request.group(3))
-            content.content_list = Content.get_contents(m_request.group(4))
+            content._topic = Topic.OPERATOR
+            content._subject = Agent.compile(m_request.group(1))
+            content._operator = Operator[m_request.group(2)]
+            content._target = Agent.compile(m_request.group(3))
+            content._content_list = Content._get_contents(m_request.group(4))
         elif m_because:
-            content.topic = Topic.OPERATOR
-            content.subject = Agent.compile(m_because.group(1))
-            content.operator = Operator[m_because.group(2)]
-            content.content_list = Content.get_contents(m_because.group(3))
-            if content.operator is Operator.REQUEST:
-                content.target = C.AGENT_ANY if content.content_list[0].subject is C.AGENT_UNSPEC else content.content_list[0].subject
+            content._topic = Topic.OPERATOR
+            content._subject = Agent.compile(m_because.group(1))
+            content._operator = Operator[m_because.group(2)]
+            content._content_list = Content._get_contents(m_because.group(3))
+            if content._operator is Operator.REQUEST:
+                content._target = C.AGENT_ANY if content._content_list[0]._subject is C.AGENT_UNSPEC else content._content_list[0]._subject
         elif m_day:
-            content.topic = Topic.OPERATOR
-            content.subject = Agent.compile(m_day.group(1))
-            content.operator = Operator.DAY
-            content.day = int(m_day.group(2))
-            content.content_list = Content.get_contents(m_day.group(3))
+            content._topic = Topic.OPERATOR
+            content._subject = Agent.compile(m_day.group(1))
+            content._operator = Operator.DAY
+            content._day = int(m_day.group(2))
+            content._content_list = Content._get_contents(m_day.group(3))
         else:
-            content.topic = Topic.Skip
-        content.complete_inner_subject()
-        content.normalize_text()
+            content._topic = Topic.Skip
+        content._complete_inner_subject()
+        content._normalize_text()
         return content
 
     def equals(self, other: Content) -> bool:
@@ -255,7 +295,7 @@ class Content:
         Returns:
             True if other is equivalent to this, otherwise false.
         """
-        return self.text == other.text
+        return self._text == other._text
 
 
 class Topic(Enum):
@@ -349,15 +389,15 @@ class ContentBuilder:
 
     def __init__(self) -> None:
         """Initialize a new instance of ContentBuilder."""
-        self.subject: Agent = C.AGENT_UNSPEC
-        self.target: Agent = C.AGENT_ANY
-        self.topic: Topic = Topic.DUMMY
-        self.role: Role = Role.UNC
-        self.result: Species = Species.UNC
-        self.utterance: Utterance = Utterance()
-        self.operator: Operator = Operator.NOP
-        self.content_list: List[Content] = []
-        self.day: int = -1
+        self._subject: Agent = C.AGENT_UNSPEC
+        self._target: Agent = C.AGENT_ANY
+        self._topic: Topic = Topic.DUMMY
+        self._role: Role = Role.UNC
+        self._result: Species = Species.UNC
+        self._utterance: Utterance = Utterance()
+        self._operator: Operator = Operator.NOP
+        self._content_list: List[Content] = []
+        self._day: int = -1
 
 
 class AgreeContentBuilder(ContentBuilder):
@@ -373,12 +413,12 @@ class AgreeContentBuilder(ContentBuilder):
             subject(optional): The agent that agrees. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__()
-        self.topic = Topic.AGREE
-        self.subject = subject
+        self._topic = Topic.AGREE
+        self._subject = subject
         if utterance_type is UtteranceType.TALK:
-            self.utterance = Talk(day, C.AGENT_NONE, idx, "", 0)
+            self._utterance = Talk(day, C.AGENT_NONE, idx, "", 0)
         else:
-            self.utterance = Whisper(day, C.AGENT_NONE, idx, "", 0)
+            self._utterance = Whisper(day, C.AGENT_NONE, idx, "", 0)
 
 
 class DisagreeContentBuilder(AgreeContentBuilder):
@@ -394,7 +434,7 @@ class DisagreeContentBuilder(AgreeContentBuilder):
             subject(optional): The agent that disagrees. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(utterance_type, day, idx, subject=subject)
-        self.topic = Topic.DISAGREE
+        self._topic = Topic.DISAGREE
 
 
 class AttackContentBuilder(ContentBuilder):
@@ -408,9 +448,9 @@ class AttackContentBuilder(ContentBuilder):
             subject(optional): The agent that expresses the will to attack. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__()
-        self.topic = Topic.ATTACK
-        self.subject = subject
-        self.target = target
+        self._topic = Topic.ATTACK
+        self._subject = subject
+        self._target = target
 
 
 class AttackedContentBuilder(AttackContentBuilder):
@@ -424,7 +464,7 @@ class AttackedContentBuilder(AttackContentBuilder):
             subject(optional): The agent that reports the attack. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, subject=subject)
-        self.topic = Topic.ATTACKED
+        self._topic = Topic.ATTACKED
 
 
 class DivinationContentBuilder(AttackContentBuilder):
@@ -438,7 +478,7 @@ class DivinationContentBuilder(AttackContentBuilder):
             subject(optional): The agent that does the divination. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, subject=subject)
-        self.topic = Topic.DIVINATION
+        self._topic = Topic.DIVINATION
 
 
 class DivinedResultContentBuilder(ContentBuilder):
@@ -453,10 +493,10 @@ class DivinedResultContentBuilder(ContentBuilder):
             subject(optional): The agent that did the divination. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__()
-        self.topic = Topic.DIVINED
-        self.subject = subject
-        self.target = target
-        self.result = result
+        self._topic = Topic.DIVINED
+        self._subject = subject
+        self._target = target
+        self._result = result
 
 
 class GuardContentBuilder(AttackContentBuilder):
@@ -470,7 +510,7 @@ class GuardContentBuilder(AttackContentBuilder):
             subject(optional): The agent that guards. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, subject=subject)
-        self.topic = Topic.GUARD
+        self._topic = Topic.GUARD
 
 
 class GuardedAgentContentBuilder(AttackContentBuilder):
@@ -484,7 +524,7 @@ class GuardedAgentContentBuilder(AttackContentBuilder):
             subject(optional): The agent that guarded. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, subject=subject)
-        self.topic = Topic.GUARDED
+        self._topic = Topic.GUARDED
 
 
 class VoteContentBuilder(AttackContentBuilder):
@@ -498,7 +538,7 @@ class VoteContentBuilder(AttackContentBuilder):
             subject(optional): The agent that votes. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, subject=subject)
-        self.topic = Topic.VOTE
+        self._topic = Topic.VOTE
 
 
 class VotedContentBuilder(AttackContentBuilder):
@@ -512,7 +552,7 @@ class VotedContentBuilder(AttackContentBuilder):
             subject(optional): The agent that voted. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, subject=subject)
-        self.topic = Topic.VOTED
+        self._topic = Topic.VOTED
 
 
 class ComingoutContentBuilder(ContentBuilder):
@@ -527,10 +567,10 @@ class ComingoutContentBuilder(ContentBuilder):
             subject(optional): The agent that does the comingout. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__()
-        self.topic = Topic.COMINGOUT
-        self.subject = subject
-        self.target = target
-        self.role = role
+        self._topic = Topic.COMINGOUT
+        self._subject = subject
+        self._target = target
+        self._role = role
 
 
 class EstimateContentBuilder(ComingoutContentBuilder):
@@ -545,7 +585,7 @@ class EstimateContentBuilder(ComingoutContentBuilder):
             subject(optional): The agent that estimates. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, role, subject=subject)
-        self.topic = Topic.ESTIMATE
+        self._topic = Topic.ESTIMATE
 
 
 class IdentContentBuilder(DivinedResultContentBuilder):
@@ -560,7 +600,7 @@ class IdentContentBuilder(DivinedResultContentBuilder):
             subject(optional): The agent that did the identification. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, result, subject=subject)
-        self.topic = Topic.IDENTIFIED
+        self._topic = Topic.IDENTIFIED
 
 
 class RequestContentBuilder(ContentBuilder):
@@ -575,11 +615,11 @@ class RequestContentBuilder(ContentBuilder):
             subject(optional): The agent that requests. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__()
-        self.topic = Topic.OPERATOR
-        self.operator = Operator.REQUEST
-        self.subject = subject
-        self.target = target
-        self.content_list.append(action.clone())
+        self._topic = Topic.OPERATOR
+        self._operator = Operator.REQUEST
+        self._subject = subject
+        self._target = target
+        self._content_list.append(action.clone())
 
 
 class InquiryContentBuilder(RequestContentBuilder):
@@ -594,7 +634,7 @@ class InquiryContentBuilder(RequestContentBuilder):
             subject(optional): The agent that makes the inquiry. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(target, action, subject=subject)
-        self.operator = Operator.INQUIRE
+        self._operator = Operator.INQUIRE
 
 
 class BecauseContentBuilder(ContentBuilder):
@@ -609,11 +649,11 @@ class BecauseContentBuilder(ContentBuilder):
             subject(optional): The agent that expresses the action and its reason. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__()
-        self.topic = Topic.OPERATOR
-        self.operator = Operator.BECAUSE
-        self.subject = subject
-        self.content_list.append(reason.clone())
-        self.content_list.append(action.clone())
+        self._topic = Topic.OPERATOR
+        self._operator = Operator.BECAUSE
+        self._subject = subject
+        self._content_list.append(reason.clone())
+        self._content_list.append(action.clone())
 
 
 class AndContentBuilder(ContentBuilder):
@@ -630,12 +670,12 @@ class AndContentBuilder(ContentBuilder):
             ValueError: In case of empty conjuncts, ValueError is raised.
         """
         super().__init__()
-        self.topic = Topic.OPERATOR
-        self.operator = Operator.AND
-        self.subject = subject
+        self._topic = Topic.OPERATOR
+        self._operator = Operator.AND
+        self._subject = subject
         if not contents:
             raise ValueError("Invalid argument: contents is empty")
-        self.content_list.extend([c.clone() for c in contents])
+        self._content_list.extend([c.clone() for c in contents])
 
 
 class OrContentBuilder(AndContentBuilder):
@@ -649,7 +689,7 @@ class OrContentBuilder(AndContentBuilder):
             subject(optional): The agent that expresses the disjunctive clause. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(contents, subject=subject)
-        self.operator = Operator.OR
+        self._operator = Operator.OR
 
 
 class XorContentBuilder(BecauseContentBuilder):
@@ -664,7 +704,7 @@ class XorContentBuilder(BecauseContentBuilder):
             subject(optional): The agent that expresses the exclusive disjunctive clause. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__(disjunct1, disjunct2, subject=subject)
-        self.operator = Operator.XOR
+        self._operator = Operator.XOR
 
 
 class NotContentBuilder(ContentBuilder):
@@ -678,10 +718,10 @@ class NotContentBuilder(ContentBuilder):
             subject(optional): The agent that expresses the negation. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__()
-        self.topic = Topic.OPERATOR
-        self.operator = Operator.NOT
-        self.subject = subject
-        self.content_list.append(content.clone())
+        self._topic = Topic.OPERATOR
+        self._operator = Operator.NOT
+        self._subject = subject
+        self._content_list.append(content.clone())
 
 
 class DayContentBuilder(ContentBuilder):
@@ -696,11 +736,11 @@ class DayContentBuilder(ContentBuilder):
             subject(optional): The agent that adds the date to the Content. Defaults to C.AGENT_UNSPEC.
         """
         super().__init__()
-        self.topic = Topic.OPERATOR
-        self.operator = Operator.DAY
-        self.subject = subject
-        self.day = day
-        self.content_list.append(content.clone())
+        self._topic = Topic.OPERATOR
+        self._operator = Operator.DAY
+        self._subject = subject
+        self._day = day
+        self._content_list.append(content.clone())
 
 
 class SkipContentBuilder(ContentBuilder):
@@ -709,7 +749,7 @@ class SkipContentBuilder(ContentBuilder):
     def __init__(self) -> None:
         """Initialize a new instance of SkipContentBuilder."""
         super().__init__()
-        self.topic = Topic.Skip
+        self._topic = Topic.Skip
 
 
 class OverContentBuilder(ContentBuilder):
@@ -718,7 +758,7 @@ class OverContentBuilder(ContentBuilder):
     def __init__(self) -> None:
         """Initialize a new instance of OverContentBuilder."""
         super().__init__()
-        self.topic = Topic.Over
+        self._topic = Topic.Over
 
 
 class EmptyContentBuilder(ContentBuilder):
@@ -727,4 +767,4 @@ class EmptyContentBuilder(ContentBuilder):
     def __init__(self) -> None:
         """Initialize a new instance of EmptyContentBuilder."""
         super().__init__()
-        self.topic = Topic.DUMMY
+        self._topic = Topic.DUMMY
