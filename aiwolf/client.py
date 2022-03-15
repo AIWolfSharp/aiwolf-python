@@ -19,18 +19,18 @@ import json
 import socket
 from typing import List, Optional, TypedDict
 
-from aiwolf.gameinfo import GameInfo, GameInfo0
-from aiwolf.gamesetting import GameSetting, GameSetting0
+from aiwolf.gameinfo import GameInfo, _GameInfo
+from aiwolf.gamesetting import GameSetting, _GameSetting
 from aiwolf.player import AbstractPlayer
-from aiwolf.utterance import Talk, Utterance0, Whisper
+from aiwolf.utterance import Talk, _Utterance, Whisper
 
 
 class Packet(TypedDict):
-    gameInfo: Optional[GameInfo0]
-    gameSetting: Optional[GameSetting0]
+    gameInfo: Optional[_GameInfo]
+    gameSetting: Optional[_GameSetting]
     request: str
-    talkHistory: Optional[List[Utterance0]]
-    whisperHistory: Optional[List[Utterance0]]
+    talkHistory: Optional[List[_Utterance]]
+    whisperHistory: Optional[List[_Utterance]]
 
 
 class TcpipClient:
@@ -55,7 +55,7 @@ class TcpipClient:
             return self.name if self.name is not None else self.player.get_name()
         elif request == "ROLE":
             return self.request_role
-        game_info0: Optional[GameInfo0] = packet["gameInfo"]
+        game_info0: Optional[_GameInfo] = packet["gameInfo"]
         self.game_info = GameInfo(game_info0) if game_info0 is not None else None
         if self.game_info is None:
             self.game_info = self.last_game_info
@@ -63,7 +63,7 @@ class TcpipClient:
             self.last_game_info = self.game_info
         if self.game_info is None:
             return None
-        talk_history0: Optional[List[Utterance0]] = packet["talkHistory"]
+        talk_history0: Optional[List[_Utterance]] = packet["talkHistory"]
         if talk_history0 is not None:
             for talk0 in talk_history0:
                 talk: Talk = Talk.compile(talk0)
@@ -74,7 +74,7 @@ class TcpipClient:
                     last_talk: Talk = talk_list[-1]
                     if talk.day > last_talk.day or (talk.day == last_talk.day and talk.idx > last_talk.idx):
                         talk_list.append(talk)
-        whisper_history0: Optional[List[Utterance0]] = packet["whisperHistory"]
+        whisper_history0: Optional[List[_Utterance]] = packet["whisperHistory"]
         if whisper_history0 is not None:
             for whisper0 in whisper_history0:
                 whisper: Whisper = Whisper.compile(whisper0)
@@ -86,7 +86,7 @@ class TcpipClient:
                     if whisper.day > last_whisper.day or (whisper.day == last_whisper.day and whisper.idx > last_whisper.idx):
                         whisper_list.append(whisper)
         if request == "INITIALIZE":
-            game_setting0: Optional[GameSetting0] = packet["gameSetting"]
+            game_setting0: Optional[_GameSetting] = packet["gameSetting"]
             if game_setting0 is not None:
                 self.player.initialize(self.game_info, GameSetting(game_setting0))
             return None

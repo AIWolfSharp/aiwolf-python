@@ -18,37 +18,37 @@
 from typing import Dict, List, Optional, TypedDict
 
 from aiwolf.agent import Agent, Role, Status
-from aiwolf.judge import Judge, Judge0
-from aiwolf.utterance import Talk, Utterance0, Whisper
-from aiwolf.vote import Vote, Vote0
+from aiwolf.judge import Judge, _Judge
+from aiwolf.utterance import Talk, _Utterance, Whisper
+from aiwolf.vote import Vote, _Vote
 
 
-class GameInfo0(TypedDict):
+class _GameInfo(TypedDict):
     agent: int
-    attackVoteList: List[Vote0]
+    attackVoteList: List[_Vote]
     attackedAgent: int
     cursedFox: int
     day: int
-    divineResult: Judge0
+    divineResult: _Judge
     executedAgent: int
     existingRoleList: List[str]
     guardedAgent: int
     lastDeadAgentList: List[int]
-    latestAttackVoteList: List[Vote0]
+    latestAttackVoteList: List[_Vote]
     latestExecutedAgent: int
-    latestVoteList: List[Vote0]
-    mediumResult: Judge0
+    latestVoteList: List[_Vote]
+    mediumResult: _Judge
     remainTalkMap: Dict[str, int]
     remainWhisperMap: Dict[str, int]
     roleMap: Dict[str, str]
     statusMap: Dict[str, str]
-    talkList: List[Utterance0]
-    voteList: List[Vote0]
-    whisperList: List[Utterance0]
+    talkList: List[_Utterance]
+    voteList: List[_Vote]
+    whisperList: List[_Utterance]
 
 
 class GameInfo:
-    def __init__(self, game_info0: GameInfo0) -> None:
+    def __init__(self, game_info0: _GameInfo) -> None:
         self.agent: Agent = Agent(game_info0["agent"])
         self.attack_vote_list: List[Vote] = [Vote.compile(v) for v in game_info0["attackVoteList"]]
         self.attacked_agent: Optional[Agent] = GameInfo.get_agent(game_info0["attackedAgent"])

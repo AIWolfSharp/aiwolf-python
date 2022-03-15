@@ -23,7 +23,7 @@ from aiwolf.agent import Agent, Species
 from aiwolf.constant import Constant as C
 
 
-class Judge0(TypedDict):
+class _Judge(TypedDict):
     agent: int
     day: int
     target: int
@@ -38,7 +38,7 @@ class Judge:
         self.result: Species = result
 
     @staticmethod
-    def compile(judge0: Judge0) -> Judge:
+    def compile(judge0: _Judge) -> Judge:
         j: Judge = Judge()
         j.agent = Agent(judge0['agent'])
         j.day = judge0['day']

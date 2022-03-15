@@ -29,7 +29,7 @@ class UtteranceType(Enum):
     WHISPER = "WHISPER"
 
 
-class Utterance0(TypedDict):
+class _Utterance(TypedDict):
     day: int
     agent: int
     idx: int
@@ -55,7 +55,7 @@ class Talk(Utterance):
         super().__init__(day, agent, idx, text, turn)
 
     @staticmethod
-    def compile(utterance0: Utterance0) -> Talk:
+    def compile(utterance0: _Utterance) -> Talk:
         t = Talk()
         t.day = utterance0["day"]
         t.agent = Agent(utterance0["agent"])
@@ -70,7 +70,7 @@ class Whisper(Utterance):
         super().__init__(day, agent, idx, text, turn)
 
     @staticmethod
-    def compile(utterance0: Utterance0) -> Whisper:
+    def compile(utterance0: _Utterance) -> Whisper:
         w = Whisper()
         w.day = utterance0["day"]
         w.agent = Agent(utterance0["agent"])

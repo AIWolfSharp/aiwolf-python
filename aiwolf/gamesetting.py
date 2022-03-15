@@ -20,7 +20,7 @@ from typing import Dict, TypedDict
 from aiwolf.agent import Role
 
 
-class GameSetting0(TypedDict):
+class _GameSetting(TypedDict):
     enableNoAttack: bool
     enableNoExecution: bool
     enableRoleRequest: bool
@@ -43,7 +43,7 @@ class GameSetting0(TypedDict):
 
 
 class GameSetting:
-    def __init__(self, game_settin0: GameSetting0) -> None:
+    def __init__(self, game_settin0: _GameSetting) -> None:
         self.enable_no_attack: bool = game_settin0["enableNoAttack"]
         self.enable_no_execution: bool = game_settin0["enableNoExecution"]
         self.enable_role_request: bool = game_settin0["enableRoleRequest"]

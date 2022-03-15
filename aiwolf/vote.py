@@ -23,7 +23,7 @@ from aiwolf.agent import Agent
 from aiwolf.constant import Constant as C
 
 
-class Vote0(TypedDict):
+class _Vote(TypedDict):
     agent: int
     day: int
     target: int
@@ -36,7 +36,7 @@ class Vote:
         self.target: Agent = target
 
     @staticmethod
-    def compile(vote0: Vote0) -> Vote:
+    def compile(vote0: _Vote) -> Vote:
         v = Vote()
         v.agent = Agent(vote0["agent"])
         v.day = vote0["day"]
