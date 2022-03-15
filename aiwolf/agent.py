@@ -14,7 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""agent module."""
 from __future__ import annotations
 
 import re
@@ -23,6 +23,7 @@ from typing import Dict, Match, Optional, Pattern
 
 
 class Agent:
+    """A player agent in AIWolf game."""
 
     __agent_map: Dict[int, Agent] = {}
 
@@ -30,7 +31,14 @@ class Agent:
 
     @staticmethod
     def compile(input: str) -> Agent:
-        """Converts the string representation of Agent into Agent."""
+        """Convert the string into the corresponding Agent.
+
+        Args:
+            input: The string representing an Agent.
+
+        Returns:
+            The Agent converted from the given string.
+        """
         m: Optional[Match[str]] = Agent.agent_pattern.match(input)
         if m:
             if m.group(1) == "ANY":
@@ -48,10 +56,16 @@ class Agent:
         return cls.__agent_map[idx]
 
     def __init__(self, idx: int) -> None:
+        """Initialize a new instance of Agent.
+
+        Args:
+            idx: The index number of the Agent.
+        """
         self.__agent_idx = idx
 
     @property
     def agent_idx(self) -> int:
+        """The index number of this Agent."""
         return self.__agent_idx
 
     def __str__(self) -> str:
@@ -59,26 +73,63 @@ class Agent:
 
 
 class Role(Enum):
+    """Enumeration type for role."""
+
     UNC = "UNC"
+    """Uncertain."""
+
     BODYGUARD = "BODYGUARD"
+    """Bodyguard."""
+
     FOX = "FOX"
+    """Fox."""
+
     FREEMASON = "FREEMASON"
+    """Freemason."""
+
     MEDIUM = "MEDIUM"
+    """Medium."""
+
     POSSESSED = "POSSESSED"
+    """Possessed human."""
+
     SEER = "SEER"
+    """Seer."""
+
     VILLAGER = "VILLAGER"
+    """Villager."""
+
     WEREWOLF = "WEREWOLF"
+    """Werewolf."""
+
     ANY = "ANY"
+    """Wildcard."""
 
 
 class Species(Enum):
+    """Enumeration type for species."""
+
     UNC = "UNC"
+    """Uncertain."""
+
     HUMAN = "HUMAN"
+    """Human."""
+
     WEREWOLF = "WEREWOLF"
+    """Werewolf."""
+
     ANY = "ANY"
+    """Wildcard."""
 
 
 class Status(Enum):
+    """Enumeration type for player's status (ie. alive or dead)."""
+
     UNC = "UNC"
+    """Uncertain."""
+
     ALIVE = "ALIVE"
+    """Alive."""
+
     DEAD = "DEAD"
+    """Dead."""
