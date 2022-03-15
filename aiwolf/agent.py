@@ -25,9 +25,9 @@ from typing import Dict, Match, Optional, Pattern
 class Agent:
     """A player agent in AIWolf game."""
 
-    __agent_map: Dict[int, Agent] = {}
+    _agent_map: Dict[int, Agent] = {}
 
-    agent_pattern: Pattern[str] = re.compile(r"(Agent\[(\d+)\]|ANY)")
+    _agent_pattern: Pattern[str] = re.compile(r"(Agent\[(\d+)\]|ANY)")
 
     @staticmethod
     def compile(input: str) -> Agent:
@@ -39,7 +39,7 @@ class Agent:
         Returns:
             The Agent converted from the given string.
         """
-        m: Optional[Match[str]] = Agent.agent_pattern.match(input)
+        m: Optional[Match[str]] = Agent._agent_pattern.match(input)
         if m:
             if m.group(1) == "ANY":
                 return Agent(0xff)
@@ -50,10 +50,10 @@ class Agent:
     def __new__(cls: type[Agent], idx: int) -> Agent:
         if idx < 0:
             raise ValueError("agent index must not be negative")
-        if idx in cls.__agent_map.keys():
-            return cls.__agent_map[idx]
-        cls.__agent_map[idx] = super().__new__(cls)
-        return cls.__agent_map[idx]
+        if idx in cls._agent_map.keys():
+            return cls._agent_map[idx]
+        cls._agent_map[idx] = super().__new__(cls)
+        return cls._agent_map[idx]
 
     def __init__(self, idx: int) -> None:
         """Initialize a new instance of Agent.
@@ -61,12 +61,12 @@ class Agent:
         Args:
             idx: The index number of the Agent.
         """
-        self.__agent_idx = idx
+        self._agent_idx = idx
 
     @property
     def agent_idx(self) -> int:
         """The index number of this Agent."""
-        return self.__agent_idx
+        return self._agent_idx
 
     def __str__(self) -> str:
         return "Agent[" + "{:02}".format(self.agent_idx) + "]"
