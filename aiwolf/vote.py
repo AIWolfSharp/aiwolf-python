@@ -14,7 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""vote module."""
 from __future__ import annotations
 
 from typing import TypedDict
@@ -30,15 +30,48 @@ class _Vote(TypedDict):
 
 
 class Vote:
+    """Information of the vote for execution/attack."""
+
     def __init__(self, agent: Agent = C.AGENT_NONE, day: int = -1, target: Agent = C.AGENT_NONE) -> None:
-        self.agent: Agent = agent
-        self.day: int = day
-        self.target: Agent = target
+        """Initialize a new instance of Vote.
+
+        Args:
+            agent(optional): The agent that votes. Defaults to C.AGENT_NONE.
+            day(optional): The date of the vote. Defaults to -1.
+            target(optional): The agent to be voted on. Defaults to C.AGENT_NONE.
+        """
+        self._agent: Agent = agent
+        self._day: int = day
+        self._target: Agent = target
 
     @staticmethod
-    def compile(vote0: _Vote) -> Vote:
+    def compile(vote: _Vote) -> Vote:
+        """Convert a _Vote into the corresponding Vote.
+
+        Args:
+            vote: The _Vote to be converted.
+
+        Returns:
+            The Vote converted from the given _Vote.
+        """
+
         v = Vote()
-        v.agent = Agent(vote0["agent"])
-        v.day = vote0["day"]
-        v.target = Agent(vote0["target"])
+        v._agent = Agent(vote["agent"])
+        v._day = vote["day"]
+        v._target = Agent(vote["target"])
         return v
+
+    @property
+    def agent(self) -> Agent:
+        """The agent that votes."""
+        return self._agent
+
+    @property
+    def day(self) -> int:
+        """The date of the vote."""
+        return self._day
+
+    @property
+    def target(self) -> Agent:
+        """The agent to be voted on."""
+        return self._target
