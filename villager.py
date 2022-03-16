@@ -63,7 +63,7 @@ class SampleVillager(AbstractPlayer):
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
         self.game_info = game_info
-        self.me = game_info.agent
+        self.me = game_info.me
         self.agent_list = list(game_info.status_map.keys())
         # 前のゲームを引きずらないようにフィールドをクリアしておく
         self.comingout_map = {}

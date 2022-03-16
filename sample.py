@@ -55,7 +55,7 @@ class SamplePlayer(AbstractPlayer):
         return self.player.guard()
 
     def initialize(self, game_info: GameInfo, game_setting: GameSetting) -> None:
-        role = game_info.role_map[game_info.agent]
+        role = game_info.my_role
         if role is Role.VILLAGER:
             self.player = self.villager
         elif role is Role.BODYGUARD:
