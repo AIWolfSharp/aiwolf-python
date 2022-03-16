@@ -2,7 +2,7 @@ import setuptools
  
 setuptools.setup(
     name="aiwolf",
-    version="1.0-beta",
+    version="0.9.0",
     author="OTSUKI Takashi",
     author_email="aiwolfsharp@outlook.com",
     description="The package for creating AIWolf agent in Python",
