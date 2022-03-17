@@ -22,10 +22,10 @@ from typing import List, Optional, TypedDict
 from aiwolf.gameinfo import GameInfo, _GameInfo
 from aiwolf.gamesetting import GameSetting, _GameSetting
 from aiwolf.player import AbstractPlayer
-from aiwolf.utterance import Talk, _Utterance, Whisper
+from aiwolf.utterance import Talk, Whisper, _Utterance
 
 
-class Packet(TypedDict):
+class _Packet(TypedDict):
     gameInfo: Optional[_GameInfo]
     gameSetting: Optional[_GameSetting]
     request: str
@@ -34,8 +34,18 @@ class Packet(TypedDict):
 
 
 class TcpipClient:
+    """Client agent that communiates with the server via TCP/IP connection."""
 
     def __init__(self, player: AbstractPlayer, name: Optional[str], host: str, port: int, request_role: str) -> None:
+        """Initialize a new instance of TcpipClient.
+
+        Args:
+            player: An AbstractPlayer to be connect with the server.
+            name: The name of the player agent.
+            host: The hostname of the server.
+            port: The port number the server is waiting on.
+            request_role: The name of role that the player agent wants to be.
+        """
         self.player: AbstractPlayer = player
         self.name: Optional[str] = name
         self.host: str = host
@@ -45,11 +55,11 @@ class TcpipClient:
         self.last_game_info: Optional[GameInfo] = None
         self.sock: Optional[socket.socket] = None
 
-    def send_response(self, response: Optional[str]) -> None:
+    def _send_response(self, response: Optional[str]) -> None:
         if isinstance(self.sock, socket.socket) and isinstance(response, str):
             self.sock.send((response + "\n").encode("utf-8"))
 
-    def get_response(self, packet: Packet) -> Optional[str]:
+    def _get_response(self, packet: _Packet) -> Optional[str]:
         request: str = packet["request"]
         if request == "NAME":
             return self.name if self.name is not None else self.player.get_name()
@@ -114,7 +124,8 @@ class TcpipClient:
                 return self.player.whisper().text
             return None
 
-    def connect(self):
+    def connect(self) -> None:
+        """Connect to the server."""
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.settimeout(0.001)
         self.sock.connect((self.host, self.port))
@@ -129,10 +140,10 @@ class TcpipClient:
             line_list: List[str] = line.split("\n", 1)
             for i in range(len(line_list) - 1):
                 if len(line_list[i]) > 0:
-                    self.send_response(self.get_response(json.loads(line_list[i])))
+                    self._send_response(self._get_response(json.loads(line_list[i])))
                 line = line_list[-1]
             try:
-                self.send_response(self.get_response(json.loads(line)))
+                self._send_response(self._get_response(json.loads(line)))
                 line = ""
             except ValueError:
                 pass
