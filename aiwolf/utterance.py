@@ -46,10 +46,21 @@ class Utterance:
     """Class for utterance."""
 
     OVER = "Over"
+    """The string that nothing to say."""
+
     SKIP = "Skip"
+    """The string that means skip this turn."""
 
     def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
-        """Initialize a new instance of Utterance."""
+        """Initialize a new instance of Utterance.
+
+        Args:
+            day(opional): The date of the utterance. Defaults to -1.
+            agent(optional): The agent that utters. Defaults to C.AGENT_NONE.
+            idx(optional): The index number of the utterance. Defaults to -1.
+            text(optional): The uttered text. Defaults to "".
+            turn(optional): The turn of the utterance. Defaults to -1.
+        """
         self._day: int = day
         self._agent:  Agent = agent
         self._idx: int = idx
@@ -58,7 +69,7 @@ class Utterance:
 
     @property
     def day(self) -> int:
-        """The day of this utterance."""
+        """The date of this utterance."""
         return self._day
 
     @property
@@ -86,7 +97,15 @@ class Talk(Utterance):
     """Talk class."""
 
     def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
-        """Initialize a new instance of Talk."""
+        """Initialize a new instance of Talk.
+
+        Args:
+            day(opional): The date of the utterance. Defaults to -1.
+            agent(optional): The agent that utters. Defaults to C.AGENT_NONE.
+            idx(optional): The index number of the utterance. Defaults to -1.
+            text(optional): The uttered text. Defaults to "".
+            turn(optional): The turn of the utterance. Defaults to -1.
+        """
         super().__init__(day, agent, idx, text, turn)
 
     @staticmethod
@@ -112,7 +131,15 @@ class Whisper(Utterance):
     """Whisper class."""
 
     def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
-        """Initialize a new instance of Whisper."""
+        """Initialize a new instance of Whisper.
+
+        Args:
+            day(opional): The date of the utterance. Defaults to -1.
+            agent(optional): The agent that utters. Defaults to C.AGENT_NONE.
+            idx(optional): The index number of the utterance. Defaults to -1.
+            text(optional): The uttered text. Defaults to "".
+            turn(optional): The turn of the utterance. Defaults to -1.
+        """
         super().__init__(day, agent, idx, text, turn)
 
     @staticmethod
