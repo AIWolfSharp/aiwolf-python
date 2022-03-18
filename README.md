@@ -1,5 +1,5 @@
 # aiwolf package
-The python package for creating AI Werewolf agent.
+The Python package for creating AI Werewolf agent.
 ## How to use
 Simply install aiwolf package from this repogitory using pip as follows.
 ```
