@@ -88,6 +88,11 @@ class GameInfo:
         return self._me
 
     @property
+    def agent_list(self) -> List[Agent]:
+        """The list of existing agents."""
+        return list(self._status_map.keys())
+
+    @property
     def my_role(self) -> Role:
         """The role of the player who receives this GameInfo."""
         return self._role_map[self._me]
