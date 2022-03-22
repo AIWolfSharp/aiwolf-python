@@ -2,7 +2,7 @@ import setuptools
  
 setuptools.setup(
     name="aiwolf",
-    version="1.0.0",
+    version="1.1.0",
     author="OTSUKI Takashi",
     author_email="aiwolfsharp@outlook.com",
     url="https://github.com/AIWolfSharp/aiwolf-python",
