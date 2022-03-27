@@ -50,33 +50,55 @@ class _GameInfo(TypedDict):
 class GameInfo:
     """Class for game information."""
 
+    _me: Agent
+    _attack_vote_list: List[Vote]
+    _attacked_agent: Optional[Agent]
+    _cursed_fox: Optional[Agent]
+    _day: int
+    _divine_result: Optional[Judge]
+    _executed_agent: Optional[Agent]
+    _existing_role_list: List[Role]
+    _guarded_agent: Optional[Agent]
+    _last_dead_agent_list: List[Agent]
+    _latest_attack_vote_list: List[Vote]
+    _latest_executed_agent: Optional[Agent]
+    _latest_vote_list: List[Vote]
+    _medium_result: Optional[Judge]
+    _remain_talk_map: Dict[Agent, int]
+    _remain_whisper_map: Dict[Agent, int]
+    _role_map: Dict[Agent, Role]
+    _status_map: Dict[Agent, Status]
+    _talk_list: List[Talk]
+    _vote_list: List[Vote]
+    _whisper_list: List[Whisper]
+
     def __init__(self, game_info: _GameInfo) -> None:
         """Initializes a new instance of GameInfo.
 
         Args:
             game_info: The _GameInfo used for initialization.
         """
-        self._me: Agent = Agent(game_info["agent"])
-        self._attack_vote_list: List[Vote] = [Vote.compile(v) for v in game_info["attackVoteList"]]
-        self._attacked_agent: Optional[Agent] = GameInfo._get_agent(game_info["attackedAgent"])
-        self._cursed_fox: Optional[Agent] = GameInfo._get_agent(game_info["cursedFox"])
-        self._day: int = game_info["day"]
-        self._divine_result: Optional[Judge] = Judge.compile(game_info["divineResult"]) if game_info["divineResult"] is not None else None
-        self._executed_agent: Optional[Agent] = GameInfo._get_agent(game_info["executedAgent"])
-        self._existing_role_list: List[Role] = [Role[r] for r in game_info["existingRoleList"]]
-        self._guarded_agent: Optional[Agent] = GameInfo._get_agent(game_info["guardedAgent"])
-        self._last_dead_agent_list: List[Agent] = [Agent(a) for a in game_info["lastDeadAgentList"]]
-        self._latest_attack_vote_list: List[Vote] = [Vote.compile(v) for v in game_info["latestAttackVoteList"]]
-        self._latest_executed_agent: Optional[Agent] = GameInfo._get_agent(game_info["latestExecutedAgent"])
-        self._latest_vote_list: List[Vote] = [Vote.compile(v) for v in game_info["latestVoteList"]]
-        self._medium_result: Optional[Judge] = Judge.compile(game_info["mediumResult"]) if game_info["mediumResult"] is not None else None
-        self._remain_talk_map: Dict[Agent, int] = {Agent(int(k)): v for k, v in game_info["remainTalkMap"].items()}
-        self._remain_whisper_map: Dict[Agent, int] = {Agent(int(k)): v for k, v in game_info["remainWhisperMap"].items()}
-        self._role_map: Dict[Agent, Role] = {Agent(int(k)): Role[v] for k, v in game_info["roleMap"].items()}
-        self._status_map: Dict[Agent, Status] = {Agent(int(k)): Status[v] for k, v in game_info["statusMap"].items()}
-        self._talk_list: List[Talk] = [Talk.compile(u) for u in game_info["talkList"]]
-        self._vote_list: List[Vote] = [Vote.compile(v) for v in game_info["voteList"]]
-        self._whisper_list: List[Whisper] = [Whisper.compile(u) for u in game_info["whisperList"]]
+        self._me = Agent(game_info["agent"])
+        self._attack_vote_list = [Vote.compile(v) for v in game_info["attackVoteList"]]
+        self._attacked_agent = GameInfo._get_agent(game_info["attackedAgent"])
+        self._cursed_fox = GameInfo._get_agent(game_info["cursedFox"])
+        self._day = game_info["day"]
+        self._divine_result = Judge.compile(game_info["divineResult"]) if game_info["divineResult"] is not None else None
+        self._executed_agent = GameInfo._get_agent(game_info["executedAgent"])
+        self._existing_role_list = [Role[r] for r in game_info["existingRoleList"]]
+        self._guarded_agent = GameInfo._get_agent(game_info["guardedAgent"])
+        self._last_dead_agent_list = [Agent(a) for a in game_info["lastDeadAgentList"]]
+        self._latest_attack_vote_list = [Vote.compile(v) for v in game_info["latestAttackVoteList"]]
+        self._latest_executed_agent = GameInfo._get_agent(game_info["latestExecutedAgent"])
+        self._latest_vote_list = [Vote.compile(v) for v in game_info["latestVoteList"]]
+        self._medium_result = Judge.compile(game_info["mediumResult"]) if game_info["mediumResult"] is not None else None
+        self._remain_talk_map = {Agent(int(k)): v for k, v in game_info["remainTalkMap"].items()}
+        self._remain_whisper_map = {Agent(int(k)): v for k, v in game_info["remainWhisperMap"].items()}
+        self._role_map = {Agent(int(k)): Role[v] for k, v in game_info["roleMap"].items()}
+        self._status_map = {Agent(int(k)): Status[v] for k, v in game_info["statusMap"].items()}
+        self._talk_list = [Talk.compile(u) for u in game_info["talkList"]]
+        self._vote_list = [Vote.compile(v) for v in game_info["voteList"]]
+        self._whisper_list = [Whisper.compile(u) for u in game_info["whisperList"]]
 
     @staticmethod
     def _get_agent(idx: int) -> Optional[Agent]:

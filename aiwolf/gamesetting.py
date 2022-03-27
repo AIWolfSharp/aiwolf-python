@@ -45,31 +45,51 @@ class _GameSetting(TypedDict):
 class GameSetting:
     """Class for game settings."""
 
+    _enable_no_attack: bool
+    _enable_no_execution: bool
+    _enable_role_request: bool
+    _max_attack_revote: int
+    _max_revote: int
+    _max_skip: int
+    _max_talk: int
+    _max_talk_turn: int
+    _max_whisper: int
+    _max_whisper_turn: int
+    _player_num: int
+    _random_seed: int
+    _role_num_map: Dict[Role, int]
+    _talk_on_first_day: bool
+    _time_limit: int
+    _validate_utterance: bool
+    _votable_on_first_day: bool
+    _vote_visible: bool
+    _whisper_before_revote: bool
+
     def __init__(self, game_setting: _GameSetting) -> None:
         """Initializes a new instance of GameSetting.
 
         Args:
             game_setting: The _GameSetting used for initialization.
         """
-        self._enable_no_attack: bool = game_setting["enableNoAttack"]
-        self._enable_no_execution: bool = game_setting["enableNoExecution"]
-        self._enable_role_request: bool = game_setting["enableRoleRequest"]
-        self._max_attack_revote: int = game_setting["maxAttackRevote"]
-        self._max_revote: int = game_setting["maxRevote"]
-        self._max_skip: int = game_setting["maxSkip"]
-        self._max_talk: int = game_setting["maxTalk"]
-        self._max_talk_turn: int = game_setting["maxTalkTurn"]
-        self._max_whisper: int = game_setting["maxWhisper"]
-        self._max_whisper_turn: int = game_setting["maxWhisperTurn"]
-        self._player_num: int = game_setting["playerNum"]
-        self._random_seed: int = game_setting["randomSeed"]
-        self._role_num_map: Dict[Role, int] = {Role[k]: v for k, v in game_setting["roleNumMap"].items()}
-        self._talk_on_first_day: bool = game_setting["talkOnFirstDay"]
-        self._time_limit: int = game_setting["timeLimit"]
-        self._validate_utterance: bool = game_setting["validateUtterance"]
-        self._votable_on_first_day: bool = game_setting["votableInFirstDay"]
-        self._vote_visible: bool = game_setting["voteVisible"]
-        self._whisper_before_revote: bool = game_setting["whisperBeforeRevote"]
+        self._enable_no_attack = game_setting["enableNoAttack"]
+        self._enable_no_execution = game_setting["enableNoExecution"]
+        self._enable_role_request = game_setting["enableRoleRequest"]
+        self._max_attack_revote = game_setting["maxAttackRevote"]
+        self._max_revote = game_setting["maxRevote"]
+        self._max_skip = game_setting["maxSkip"]
+        self._max_talk = game_setting["maxTalk"]
+        self._max_talk_turn = game_setting["maxTalkTurn"]
+        self._max_whisper = game_setting["maxWhisper"]
+        self._max_whisper_turn = game_setting["maxWhisperTurn"]
+        self._player_num = game_setting["playerNum"]
+        self._random_seed = game_setting["randomSeed"]
+        self._role_num_map = {Role[k]: v for k, v in game_setting["roleNumMap"].items()}
+        self._talk_on_first_day = game_setting["talkOnFirstDay"]
+        self._time_limit = game_setting["timeLimit"]
+        self._validate_utterance = game_setting["validateUtterance"]
+        self._votable_on_first_day = game_setting["votableInFirstDay"]
+        self._vote_visible = game_setting["voteVisible"]
+        self._whisper_before_revote = game_setting["whisperBeforeRevote"]
 
     @property
     def enable_no_attack(self) -> bool:

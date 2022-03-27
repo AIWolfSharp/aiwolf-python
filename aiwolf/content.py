@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import re
 from enum import Enum
-from typing import List, Match, Optional, Pattern
+from typing import ClassVar, List, Match, Optional, Pattern
 
 from aiwolf.agent import Agent, Role, Species
 from aiwolf.constant import Constant as C
@@ -28,6 +28,17 @@ from aiwolf.utterance import Talk, Utterance, UtteranceType, Whisper
 
 class Content:
     """Content class expressing the content of an uteerance."""
+
+    _topic: Topic
+    _subject: Agent
+    _target: Agent
+    _role: Role
+    _result: Species
+    _utterance: Utterance
+    _operator: Operator
+    _content_list: List[Content]
+    _day: int
+    _text: str
 
     @staticmethod
     def _get_contents(input: str) -> List[Content]:
@@ -56,16 +67,16 @@ class Content:
         Args:
             builder: A ContentBuilder used for initialization.
         """
-        self._topic: Topic = builder._topic
-        self._subject: Agent = builder._subject
-        self._target: Agent = builder._target
-        self._role: Role = builder._role
-        self._result: Species = builder._result
-        self._utterance: Utterance = builder._utterance
-        self._operator: Operator = builder._operator
-        self._content_list: List[Content] = builder._content_list
-        self._day: int = builder._day
-        self._text: str = ""
+        self._topic = builder._topic
+        self._subject = builder._subject
+        self._target = builder._target
+        self._role = builder._role
+        self._result = builder._result
+        self._utterance = builder._utterance
+        self._operator = builder._operator
+        self._content_list = builder._content_list
+        self._day = builder._day
+        self._text = ""
         self._complete_inner_subject()
         self._normalize_text()
 
@@ -175,7 +186,7 @@ class Content:
                 self._text = str_sub + " ".join([self._operator.value, str(self._day), "("+Content._strip_subject(self._content_list[0]._text) +
                                                 ")" if self._content_list[0]._subject is self._subject else "("+self._content_list[0]._text+")"])
 
-    _strip_pattern: Pattern[str] = re.compile(r"^(Agent\[\d+\]|ANY|)\s*([A-Z]+.*)$")
+    _strip_pattern: ClassVar[Pattern[str]] = re.compile(r"^(Agent\[\d+\]|ANY|)\s*([A-Z]+.*)$")
 
     @staticmethod
     def _strip_subject(input: str) -> str:
@@ -203,20 +214,20 @@ class Content:
         content._text = self._text
         return content
 
-    _regex_agent: str = r"\s+(Agent\[\d+\]|ANY)"
-    _regex_subject: str = r"^(Agent\[\d+\]|ANY|)\s*"
-    _regex_talk: str = r"\s+([A-Z]+)\s+day(\d+)\s+ID:(\d+)"
-    _regex_role_species: str = r"\s+([A-Z]+)"
-    _regex_paren: str = r"(\(.*\))"
-    _regex_digit: str = r"(\d+)"
-    _agree_pattern: Pattern[str] = re.compile(_regex_subject + "(AGREE|DISAGREE)" + _regex_talk + "$")
-    _estimate_pattern: Pattern[str] = re.compile(_regex_subject + "(ESTIMATE|COMINGOUT)" + _regex_agent + _regex_role_species + "$")
-    _divined_pattern: Pattern[str] = re.compile(_regex_subject + "(DIVINED|IDENTIFIED)" + _regex_agent + _regex_role_species + "$")
-    _attack_pattern: Pattern[str] = re.compile(_regex_subject + "(ATTACK|ATTACKED|DIVINATION|GUARD|GUARDED|VOTE|VOTED)" + _regex_agent + "$")
-    _request_pattern: Pattern[str] = re.compile(_regex_subject + "(REQUEST|INQUIRE)" + _regex_agent + r"\s+" + _regex_paren + "$")
-    _because_pattern: Pattern[str] = re.compile(_regex_subject + r"(BECAUSE|AND|OR|XOR|NOT|REQUEST)\s+" + _regex_paren + "$")
-    _day_pattern: Pattern[str] = re.compile(_regex_subject + r"DAY\s+" + _regex_digit + r"\s+" + _regex_paren + "$")
-    _skip_pattern: Pattern[str] = re.compile("^(Skip|Over)$")
+    _regex_agent: ClassVar[str] = r"\s+(Agent\[\d+\]|ANY)"
+    _regex_subject: ClassVar[str] = r"^(Agent\[\d+\]|ANY|)\s*"
+    _regex_talk: ClassVar[str] = r"\s+([A-Z]+)\s+day(\d+)\s+ID:(\d+)"
+    _regex_role_species: ClassVar[str] = r"\s+([A-Z]+)"
+    _regex_paren: ClassVar[str] = r"(\(.*\))"
+    _regex_digit: ClassVar[str] = r"(\d+)"
+    _agree_pattern: ClassVar[Pattern[str]] = re.compile(_regex_subject + "(AGREE|DISAGREE)" + _regex_talk + "$")
+    _estimate_pattern: ClassVar[Pattern[str]] = re.compile(_regex_subject + "(ESTIMATE|COMINGOUT)" + _regex_agent + _regex_role_species + "$")
+    _divined_pattern: ClassVar[Pattern[str]] = re.compile(_regex_subject + "(DIVINED|IDENTIFIED)" + _regex_agent + _regex_role_species + "$")
+    _attack_pattern: ClassVar[Pattern[str]] = re.compile(_regex_subject + "(ATTACK|ATTACKED|DIVINATION|GUARD|GUARDED|VOTE|VOTED)" + _regex_agent + "$")
+    _request_pattern: ClassVar[Pattern[str]] = re.compile(_regex_subject + "(REQUEST|INQUIRE)" + _regex_agent + r"\s+" + _regex_paren + "$")
+    _because_pattern: ClassVar[Pattern[str]] = re.compile(_regex_subject + r"(BECAUSE|AND|OR|XOR|NOT|REQUEST)\s+" + _regex_paren + "$")
+    _day_pattern: ClassVar[Pattern[str]] = re.compile(_regex_subject + r"DAY\s+" + _regex_digit + r"\s+" + _regex_paren + "$")
+    _skip_pattern: ClassVar[Pattern[str]] = re.compile("^(Skip|Over)$")
 
     @staticmethod
     def compile(text: str) -> Content:
@@ -387,17 +398,27 @@ class Operator(Enum):
 class ContentBuilder:
     """A class for the builder classes to build Content of all kinds."""
 
+    _subject: Agent
+    _target: Agent
+    _topic: Topic
+    _role: Role
+    _result: Species
+    _utterance: Utterance
+    _operator: Operator
+    _content_list: List[Content]
+    _day: int
+
     def __init__(self) -> None:
         """Initialize a new instance of ContentBuilder."""
-        self._subject: Agent = C.AGENT_UNSPEC
-        self._target: Agent = C.AGENT_ANY
-        self._topic: Topic = Topic.DUMMY
-        self._role: Role = Role.UNC
-        self._result: Species = Species.UNC
-        self._utterance: Utterance = Utterance()
-        self._operator: Operator = Operator.NOP
-        self._content_list: List[Content] = []
-        self._day: int = -1
+        self._subject = C.AGENT_UNSPEC
+        self._target = C.AGENT_ANY
+        self._topic = Topic.DUMMY
+        self._role = Role.UNC
+        self._result = Species.UNC
+        self._utterance = Utterance()
+        self._operator = Operator.NOP
+        self._content_list = []
+        self._day = -1
 
 
 class AgreeContentBuilder(ContentBuilder):

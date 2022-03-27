@@ -18,7 +18,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TypedDict
+from typing import Final, TypedDict
 
 from aiwolf.agent import Agent
 from aiwolf.constant import Constant as C
@@ -45,10 +45,16 @@ class _Utterance(TypedDict):
 class Utterance:
     """Class for utterance."""
 
-    OVER = "Over"
+    _day: int
+    _agent: Agent
+    _idx: int
+    _text: str
+    _turn: int
+
+    OVER: Final[str] = "Over"
     """The string that nothing to say."""
 
-    SKIP = "Skip"
+    SKIP: Final[str] = "Skip"
     """The string that means skip this turn."""
 
     def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
@@ -61,11 +67,11 @@ class Utterance:
             text(optional): The uttered text. Defaults to "".
             turn(optional): The turn of the utterance. Defaults to -1.
         """
-        self._day: int = day
-        self._agent:  Agent = agent
-        self._idx: int = idx
-        self._text: str = text
-        self._turn: int = turn
+        self._day = day
+        self._agent = agent
+        self._idx = idx
+        self._text = text
+        self._turn = turn
 
     @property
     def day(self) -> int:

@@ -19,15 +19,17 @@ from __future__ import annotations
 
 import re
 from enum import Enum
-from typing import Dict, Match, Optional, Pattern
+from typing import ClassVar, Dict, Match, Optional, Pattern
 
 
 class Agent:
     """A player agent in AIWolf game."""
 
-    _agent_map: Dict[int, Agent] = {}
+    _agent_map: ClassVar[Dict[int, Agent]] = {}
 
-    _agent_pattern: Pattern[str] = re.compile(r"(Agent\[(\d+)\]|ANY)")
+    _agent_pattern: ClassVar[Pattern[str]] = re.compile(r"(Agent\[(\d+)\]|ANY)")
+
+    _agent_idx: int
 
     @staticmethod
     def compile(input: str) -> Agent:
