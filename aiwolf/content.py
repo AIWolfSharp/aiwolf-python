@@ -308,6 +308,11 @@ class Content:
         """
         return self._text == other._text
 
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, Content):
+            return NotImplemented
+        return self is __o or self.text == __o.text
+
 
 class Topic(Enum):
     """Enumeration type for topic."""
