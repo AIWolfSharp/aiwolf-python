@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import TypedDict
 
 from aiwolf.agent import Agent
-from aiwolf.constant import Constant as C
+from aiwolf.constant import AGENT_NONE
 
 
 class _Vote(TypedDict):
@@ -36,7 +36,7 @@ class Vote:
     _day: int
     _target: Agent
 
-    def __init__(self, agent: Agent = C.AGENT_NONE, day: int = -1, target: Agent = C.AGENT_NONE) -> None:
+    def __init__(self, agent: Agent = AGENT_NONE, day: int = -1, target: Agent = AGENT_NONE) -> None:
         """Initialize a new instance of Vote.
 
         Args:

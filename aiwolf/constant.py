@@ -15,13 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """constant module."""
+import warnings
 from typing import Final
 
 from aiwolf.agent import Agent
 
+AGENT_NONE: Final[Agent] = Agent(0)
+AGENT_UNSPEC: Final[Agent] = AGENT_NONE
+AGENT_ANY: Final[Agent] = Agent(0xff)
+
 
 class Constant:
     """Constant class that defines some constants."""
+
+    warnings.warn("Constant class will be deprecated in the next version.", PendingDeprecationWarning)
 
     AGENT_NONE: Final[Agent] = Agent(0)
     """Agent that does not exisit in this game."""

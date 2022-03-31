@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import TypedDict
 
 from aiwolf.agent import Agent, Species
-from aiwolf.constant import Constant as C
+from aiwolf.constant import AGENT_NONE
 
 
 class _Judge(TypedDict):
@@ -38,7 +38,7 @@ class Judge:
     _target: Agent
     _result: Species
 
-    def __init__(self, agent: Agent = C.AGENT_NONE, day: int = -1, target: Agent = C.AGENT_NONE, result: Species = Species.UNC) -> None:
+    def __init__(self, agent: Agent = AGENT_NONE, day: int = -1, target: Agent = AGENT_NONE, result: Species = Species.UNC) -> None:
         """Initialize a new instance of Judge.
 
         Args:

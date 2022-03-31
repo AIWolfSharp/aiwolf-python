@@ -21,7 +21,7 @@ from enum import Enum
 from typing import Final, TypedDict
 
 from aiwolf.agent import Agent
-from aiwolf.constant import Constant as C
+from aiwolf.constant import AGENT_NONE
 
 
 class UtteranceType(Enum):
@@ -57,7 +57,7 @@ class Utterance:
     SKIP: Final[str] = "Skip"
     """The string that means skip this turn."""
 
-    def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
+    def __init__(self, day: int = -1, agent: Agent = AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
         """Initialize a new instance of Utterance.
 
         Args:
@@ -102,7 +102,7 @@ class Utterance:
 class Talk(Utterance):
     """Talk class."""
 
-    def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
+    def __init__(self, day: int = -1, agent: Agent = AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
         """Initialize a new instance of Talk.
 
         Args:
@@ -136,7 +136,7 @@ class Talk(Utterance):
 class Whisper(Utterance):
     """Whisper class."""
 
-    def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
+    def __init__(self, day: int = -1, agent: Agent = AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
         """Initialize a new instance of Whisper.
 
         Args:
