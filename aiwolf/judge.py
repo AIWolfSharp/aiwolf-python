@@ -33,10 +33,14 @@ class _Judge(TypedDict):
 class Judge:
     """The judgement whether the player is a human or a werewolf."""
 
-    _agent: Agent
-    _day: int
-    _target: Agent
-    _result: Species
+    agent: Agent
+    """The agent that judged."""
+    day: int
+    """The date of the judgement."""
+    target: Agent
+    """The judged agent."""
+    result: Species
+    """The result of the judgement."""
 
     def __init__(self, agent: Agent = AGENT_NONE, day: int = -1, target: Agent = AGENT_NONE, result: Species = Species.UNC) -> None:
         """Initialize a new instance of Judge.
@@ -47,10 +51,10 @@ class Judge:
             target(optional): The judged agent. Defaults to C.AGENT_NONE.
             result(optional): The result of the judgement. Defaults to Species.UNC.
         """
-        self._agent = agent
-        self._day = day
-        self._target = target
-        self._result = result
+        self.agent = agent
+        self.day = day
+        self.target = target
+        self.result = result
 
     @staticmethod
     def compile(judge: _Judge) -> Judge:
@@ -63,28 +67,8 @@ class Judge:
             The Judge converted from the given _Judge.
         """
         j: Judge = Judge()
-        j._agent = Agent(judge['agent'])
-        j._day = judge['day']
-        j._target = Agent(judge['target'])
-        j._result = Species[judge['result']]
+        j.agent = Agent(judge['agent'])
+        j.day = judge['day']
+        j.target = Agent(judge['target'])
+        j.result = Species[judge['result']]
         return j
-
-    @property
-    def agent(self) -> Agent:
-        """The agent that judged."""
-        return self._agent
-
-    @property
-    def day(self) -> int:
-        """The date of the judgement."""
-        return self._day
-
-    @property
-    def target(self) -> Agent:
-        """The judged agent."""
-        return self._target
-
-    @property
-    def result(self) -> Species:
-        """The result of the judgement."""
-        return self._result
