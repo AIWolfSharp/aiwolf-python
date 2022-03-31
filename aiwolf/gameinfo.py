@@ -50,27 +50,48 @@ class _GameInfo(TypedDict):
 class GameInfo:
     """Class for game information."""
 
-    _me: Agent
-    _attack_vote_list: List[Vote]
-    _attacked_agent: Optional[Agent]
-    _cursed_fox: Optional[Agent]
-    _day: int
-    _divine_result: Optional[Judge]
-    _executed_agent: Optional[Agent]
-    _existing_role_list: List[Role]
-    _guarded_agent: Optional[Agent]
-    _last_dead_agent_list: List[Agent]
-    _latest_attack_vote_list: List[Vote]
-    _latest_executed_agent: Optional[Agent]
-    _latest_vote_list: List[Vote]
-    _medium_result: Optional[Judge]
-    _remain_talk_map: Dict[Agent, int]
-    _remain_whisper_map: Dict[Agent, int]
-    _role_map: Dict[Agent, Role]
-    _status_map: Dict[Agent, Status]
-    _talk_list: List[Talk]
-    _vote_list: List[Vote]
-    _whisper_list: List[Whisper]
+    me: Agent
+    """The agent who recieves this GameInfo."""
+    attack_vote_list: List[Vote]
+    """The list of votes for attack."""
+    attacked_agent: Optional[Agent]
+    """The agent decided to be attacked as a result of werewolves' vote."""
+    cursed_fox: Optional[Agent]
+    """The fox killed by curse."""
+    day: int
+    """Current day."""
+    divine_result: Optional[Judge]
+    """The result of the dvination."""
+    executed_agent: Optional[Agent]
+    """The agent executed last night."""
+    existing_role_list: List[Role]
+    """The list of existing roles in this game."""
+    guarded_agent: Optional[Agent]
+    """The agent guarded last night."""
+    last_dead_agent_list: List[Agent]
+    """The list of agents who died last night."""
+    latest_attack_vote_list: List[Vote]
+    """The latest list of votes for attack."""
+    latest_executed_agent: Optional[Agent]
+    """The latest executed agent."""
+    latest_vote_list: List[Vote]
+    """The latest list of votes for execution."""
+    medium_result: Optional[Judge]
+    """The result of the inquest."""
+    remain_talk_map: Dict[Agent, int]
+    """The number of opportunities to talk remaining."""
+    remain_whisper_map: Dict[Agent, int]
+    """The number of opportunities to whisper remaining."""
+    role_map: Dict[Agent, Role]
+    """The known roles of agents."""
+    status_map: Dict[Agent, Status]
+    """The statuses of all agents."""
+    talk_list: List[Talk]
+    """The list of today's talks."""
+    vote_list: List[Vote]
+    """The list of votes for execution."""
+    whisper_list: List[Whisper]
+    """The list of today's whispers."""
 
     def __init__(self, game_info: _GameInfo) -> None:
         """Initializes a new instance of GameInfo.
@@ -78,143 +99,38 @@ class GameInfo:
         Args:
             game_info: The _GameInfo used for initialization.
         """
-        self._me = Agent(game_info["agent"])
-        self._attack_vote_list = [Vote.compile(v) for v in game_info["attackVoteList"]]
-        self._attacked_agent = GameInfo._get_agent(game_info["attackedAgent"])
-        self._cursed_fox = GameInfo._get_agent(game_info["cursedFox"])
-        self._day = game_info["day"]
-        self._divine_result = Judge.compile(game_info["divineResult"]) if game_info["divineResult"] is not None else None
-        self._executed_agent = GameInfo._get_agent(game_info["executedAgent"])
-        self._existing_role_list = [Role[r] for r in game_info["existingRoleList"]]
-        self._guarded_agent = GameInfo._get_agent(game_info["guardedAgent"])
-        self._last_dead_agent_list = [Agent(a) for a in game_info["lastDeadAgentList"]]
-        self._latest_attack_vote_list = [Vote.compile(v) for v in game_info["latestAttackVoteList"]]
-        self._latest_executed_agent = GameInfo._get_agent(game_info["latestExecutedAgent"])
-        self._latest_vote_list = [Vote.compile(v) for v in game_info["latestVoteList"]]
-        self._medium_result = Judge.compile(game_info["mediumResult"]) if game_info["mediumResult"] is not None else None
-        self._remain_talk_map = {Agent(int(k)): v for k, v in game_info["remainTalkMap"].items()}
-        self._remain_whisper_map = {Agent(int(k)): v for k, v in game_info["remainWhisperMap"].items()}
-        self._role_map = {Agent(int(k)): Role[v] for k, v in game_info["roleMap"].items()}
-        self._status_map = {Agent(int(k)): Status[v] for k, v in game_info["statusMap"].items()}
-        self._talk_list = [Talk.compile(u) for u in game_info["talkList"]]
-        self._vote_list = [Vote.compile(v) for v in game_info["voteList"]]
-        self._whisper_list = [Whisper.compile(u) for u in game_info["whisperList"]]
+        self.me = Agent(game_info["agent"])
+        self.attack_vote_list = [Vote.compile(v) for v in game_info["attackVoteList"]]
+        self.attacked_agent = GameInfo._get_agent(game_info["attackedAgent"])
+        self.cursed_fox = GameInfo._get_agent(game_info["cursedFox"])
+        self.day = game_info["day"]
+        self.divine_result = Judge.compile(game_info["divineResult"]) if game_info["divineResult"] is not None else None
+        self.executed_agent = GameInfo._get_agent(game_info["executedAgent"])
+        self.existing_role_list = [Role[r] for r in game_info["existingRoleList"]]
+        self.guarded_agent = GameInfo._get_agent(game_info["guardedAgent"])
+        self.last_dead_agent_list = [Agent(a) for a in game_info["lastDeadAgentList"]]
+        self.latest_attack_vote_list = [Vote.compile(v) for v in game_info["latestAttackVoteList"]]
+        self.latest_executed_agent = GameInfo._get_agent(game_info["latestExecutedAgent"])
+        self.latest_vote_list = [Vote.compile(v) for v in game_info["latestVoteList"]]
+        self.medium_result = Judge.compile(game_info["mediumResult"]) if game_info["mediumResult"] is not None else None
+        self.remain_talk_map = {Agent(int(k)): v for k, v in game_info["remainTalkMap"].items()}
+        self.remain_whisper_map = {Agent(int(k)): v for k, v in game_info["remainWhisperMap"].items()}
+        self.role_map = {Agent(int(k)): Role[v] for k, v in game_info["roleMap"].items()}
+        self.status_map = {Agent(int(k)): Status[v] for k, v in game_info["statusMap"].items()}
+        self.talk_list = [Talk.compile(u) for u in game_info["talkList"]]
+        self.vote_list = [Vote.compile(v) for v in game_info["voteList"]]
+        self.whisper_list = [Whisper.compile(u) for u in game_info["whisperList"]]
 
     @staticmethod
     def _get_agent(idx: int) -> Optional[Agent]:
         return None if idx < 0 else Agent(idx)
 
     @property
-    def me(self) -> Agent:
-        """The agent who recieves this GameInfo."""
-        return self._me
-
-    @property
     def agent_list(self) -> List[Agent]:
         """The list of existing agents."""
-        return list(self._status_map.keys())
+        return list(self.status_map.keys())
 
     @property
     def my_role(self) -> Role:
         """The role of the player who receives this GameInfo."""
-        return self._role_map[self._me]
-
-    @property
-    def attack_vote_list(self) -> List[Vote]:
-        """The list of votes for attack."""
-        return self._attack_vote_list
-
-    @property
-    def attacked_agent(self) -> Optional[Agent]:
-        """The agent decided to be attacked as a result of werewolves' vote."""
-        return self._attacked_agent
-
-    @property
-    def cursed_fox(self) -> Optional[Agent]:
-        """The fox killed by curse."""
-        return self._cursed_fox
-
-    @property
-    def day(self) -> int:
-        """Current day."""
-        return self._day
-
-    @property
-    def divine_result(self) -> Optional[Judge]:
-        """The result of the dvination."""
-        return self._divine_result
-
-    @property
-    def executed_agent(self) -> Optional[Agent]:
-        """The agent executed last night."""
-        return self._executed_agent
-
-    @property
-    def existing_role_list(self) -> List[Role]:
-        """The list of existing roles in this game."""
-        return self._existing_role_list
-
-    @property
-    def guarded_agent(self) -> Optional[Agent]:
-        """The agent guarded last night."""
-        return self._guarded_agent
-
-    @property
-    def last_dead_agent_list(self) -> List[Agent]:
-        """The list of agents who died last night."""
-        return self._last_dead_agent_list
-
-    @property
-    def latest_attack_vote_list(self) -> List[Vote]:
-        """The latest list of votes for attack."""
-        return self._latest_attack_vote_list
-
-    @property
-    def latest_executed_agent(self) -> Optional[Agent]:
-        """The latest executed agent."""
-        return self._latest_executed_agent
-
-    @property
-    def latest_vote_list(self) -> List[Vote]:
-        """The latest list of votes for execution."""
-        return self._latest_vote_list
-
-    @property
-    def medium_result(self) -> Optional[Judge]:
-        """The result of the inquest."""
-        return self._medium_result
-
-    @property
-    def remain_talk_map(self) -> Dict[Agent, int]:
-        """The number of opportunities to talk remaining."""
-        return self._remain_talk_map
-
-    @property
-    def remain_whisper_map(self) -> Dict[Agent, int]:
-        """The number of opportunities to whisper remaining."""
-        return self._remain_whisper_map
-
-    @property
-    def role_map(self) -> Dict[Agent, Role]:
-        """The known roles of agents."""
-        return self._role_map
-
-    @property
-    def status_map(self) -> Dict[Agent, Status]:
-        """The statuses of all agents."""
-        return self._status_map
-
-    @property
-    def talk_list(self) -> List[Talk]:
-        """The list of today's talks."""
-        return self._talk_list
-
-    @property
-    def vote_list(self) -> List[Vote]:
-        """The list of votes for execution."""
-        return self._vote_list
-
-    @property
-    def whisper_list(self) -> List[Whisper]:
-        """The list of today's whispers."""
-        return self._whisper_list
+        return self.role_map[self.me]
