@@ -20,24 +20,35 @@ from __future__ import annotations
 import re
 from enum import Enum
 from typing import ClassVar, List, Match, Optional, Pattern
-from aiwolf.constant import AGENT_NONE, AGENT_UNSPEC, AGENT_ANY
+
 from aiwolf.agent import Agent, Role, Species
+from aiwolf.constant import AGENT_ANY, AGENT_NONE, AGENT_UNSPEC
 from aiwolf.utterance import Talk, Utterance, UtteranceType, Whisper
 
 
 class Content:
     """Content class expressing the content of an uteerance."""
 
-    _topic: Topic
-    _subject: Agent
-    _target: Agent
-    _role: Role
-    _result: Species
-    _utterance: Utterance
-    _operator: Operator
-    _content_list: List[Content]
-    _day: int
-    _text: str
+    topic: Topic
+    """The topic of this Content."""
+    subject: Agent
+    """The Agent that is the subject of this Content."""
+    target: Agent
+    """The Agent that is the object of this Content."""
+    role: Role
+    """The role this Content refers to."""
+    result: Species
+    """The species this Content refers to."""
+    utterance: Utterance
+    """The utterance this Content refers to."""
+    operator: Operator
+    """The operator in this Content."""
+    content_list: List[Content]
+    """The list of the operands in this Content."""
+    day: int
+    """The date added to the operand in this Content."""
+    text: str
+    """The text representing this Content."""
 
     @staticmethod
     def _get_contents(input: str) -> List[Content]:
@@ -66,124 +77,74 @@ class Content:
         Args:
             builder: A ContentBuilder used for initialization.
         """
-        self._topic = builder._topic
-        self._subject = builder._subject
-        self._target = builder._target
-        self._role = builder._role
-        self._result = builder._result
-        self._utterance = builder._utterance
-        self._operator = builder._operator
-        self._content_list = builder._content_list
-        self._day = builder._day
-        self._text = ""
+        self.topic = builder._topic
+        self.subject = builder._subject
+        self.target = builder._target
+        self.role = builder._role
+        self.result = builder._result
+        self.utterance = builder._utterance
+        self.operator = builder._operator
+        self.content_list = builder._content_list
+        self.day = builder._day
+        self.text = ""
         self._complete_inner_subject()
         self._normalize_text()
 
-    @property
-    def topic(self) -> Topic:
-        """The topic of this Content."""
-        return self._topic
-
-    @property
-    def subject(self) -> Agent:
-        """The Agent that is the subject of this Content."""
-        return self._subject
-
-    @property
-    def target(self) -> Agent:
-        """The Agent that is the object of this Content."""
-        return self._target
-
-    @property
-    def role(self) -> Role:
-        """The role this Content refers to."""
-        return self._role
-
-    @property
-    def result(self) -> Species:
-        """The species this Content refers to."""
-        return self._result
-
-    @property
-    def utterance(self) -> Utterance:
-        """The utterance this Content refers to."""
-        return self._utterance
-
-    @property
-    def operator(self) -> Operator:
-        """The operator in this Content."""
-        return self._operator
-
-    @property
-    def content_list(self) -> List[Content]:
-        """The list of the operands in this Content."""
-        return self._content_list
-
-    @property
-    def day(self) -> int:
-        """The date added to the operand in this Content."""
-        return self._day
-
-    @property
-    def text(self) -> str:
-        """The text representing this Content."""
-        return self._text
-
     def _complete_inner_subject(self) -> None:
-        if not self._content_list:
+        if not self.content_list:
             return
-        self._content_list = [self._process_inner_content(c) for c in self._content_list]
+        self.content_list = [self._process_inner_content(c) for c in self.content_list]
 
     def _process_inner_content(self, inner: Content) -> Content:
-        if inner._subject is AGENT_UNSPEC:
-            if self._operator is Operator.INQUIRE or self._operator is Operator.REQUEST:
-                return inner._copy_and_replace_subject(self._target)
-            if self._subject is not AGENT_UNSPEC:
-                return inner._copy_and_replace_subject(self._subject)
+        if inner.subject is AGENT_UNSPEC:
+            if self.operator is Operator.INQUIRE or self.operator is Operator.REQUEST:
+                return inner._copy_and_replace_subject(self.target)
+            if self.subject is not AGENT_UNSPEC:
+                return inner._copy_and_replace_subject(self.subject)
         inner._complete_inner_subject()
         return inner
 
     def _copy_and_replace_subject(self, new_subject: Agent) -> Content:
         c: Content = self.clone()
-        c._subject = new_subject
+        c.subject = new_subject
         c._complete_inner_subject()
         c._normalize_text()
         return c
 
     def _normalize_text(self) -> None:
-        str_sub: str = "" if self._subject is AGENT_UNSPEC else "ANY " if self._subject is AGENT_ANY else str(self._subject)+" "
-        str_tgt: str = "ANY" if self._target is AGENT_ANY or self._target is AGENT_UNSPEC else str(self._target)
-        if self._topic is not Topic.OPERATOR:
-            if self._topic is Topic.DUMMY:
-                self._text = ""
-            elif self._topic is Topic.Skip:
-                self._text = Utterance.SKIP
-            elif self._topic is Topic.Over:
-                self._text = Utterance.OVER
-            elif self._topic is Topic.AGREE or self._topic is Topic.DISAGREE:
-                self._text = str_sub + " ".join([self._topic.value, "TALK" if type(self._utterance) is Talk else "WHISPER", str(self._utterance.day), str(self._utterance.idx)])
-            elif self._topic is Topic.ESTIMATE or self._topic is Topic.COMINGOUT:
-                self._text = str_sub + " ".join([self._topic.value, str_tgt, self._role.value])
-            elif self._topic is Topic.DIVINED or self._topic is Topic.IDENTIFIED:
-                self._text = str_sub + " ".join([self._topic.value, str_tgt, self._result.value])
-            elif self._topic is Topic.ATTACK or self._topic is Topic.ATTACKED or self._topic is Topic.DIVINATION or self._topic is Topic.GUARD\
-                    or self._topic is Topic.GUARDED or self._topic is Topic.VOTE or self._topic is Topic.VOTED:
-                self._text = str_sub + " ".join([self._topic.value, str_tgt])
+        str_sub: str = "" if self.subject is AGENT_UNSPEC else "ANY " if self.subject is AGENT_ANY else str(self.subject)+" "
+        str_tgt: str = "ANY" if self.target is AGENT_ANY or self.target is AGENT_UNSPEC else str(self.target)
+        if self.topic is not Topic.OPERATOR:
+            if self.topic is Topic.DUMMY:
+                self.text = ""
+            elif self.topic is Topic.Skip:
+                self.text = Utterance.SKIP
+            elif self.topic is Topic.Over:
+                self.text = Utterance.OVER
+            elif self.topic is Topic.AGREE or self.topic is Topic.DISAGREE:
+                self.text = str_sub + " ".join([self.topic.value, "TALK" if type(self.utterance) is Talk else "WHISPER", str(self.utterance.day), str(self.utterance.idx)])
+            elif self.topic is Topic.ESTIMATE or self.topic is Topic.COMINGOUT:
+                self.text = str_sub + " ".join([self.topic.value, str_tgt, self.role.value])
+            elif self.topic is Topic.DIVINED or self.topic is Topic.IDENTIFIED:
+                self.text = str_sub + " ".join([self.topic.value, str_tgt, self.result.value])
+            elif self.topic is Topic.ATTACK or self.topic is Topic.ATTACKED or self.topic is Topic.DIVINATION or self.topic is Topic.GUARD\
+                    or self.topic is Topic.GUARDED or self.topic is Topic.VOTE or self.topic is Topic.VOTED:
+                self.text = str_sub + " ".join([self.topic.value, str_tgt])
         else:
-            if self._operator is Operator.REQUEST or self._operator is Operator.INQUIRE:
-                self._text = str_sub + " ".join([self._operator.value, str_tgt, "("+Content._strip_subject(self._content_list[0]._text) +
-                                                ")" if self._content_list[0]._subject is self._target else "("+self._content_list[0]._text+")"])
-            elif self._operator is Operator.BECAUSE or self._operator is Operator.XOR:
-                self._text = str_sub + " ".join([self._operator.value] + ["("+Content._strip_subject(self._content_list[i]._text) +
-                                                                          ")" if self._content_list[i]._subject is self._subject else "("+self._content_list[i]._text+")" for i in [0, 1]])
-            elif self._operator is Operator.AND or self._operator is Operator.OR:
-                self._text = str_sub + " ".join([self._operator.value] + ["("+Content._strip_subject(c._text)+")" if c._subject is self._subject else "("+c._text+")" for c in self._content_list])
-            elif self._operator is Operator.NOT:
-                self._text = str_sub + " ".join([self._operator.value, "("+Content._strip_subject(self._content_list[0]._text) +
-                                                ")" if self._content_list[0]._subject is self._subject else "("+self._content_list[0]._text+")"])
-            elif self._operator is Operator.DAY:
-                self._text = str_sub + " ".join([self._operator.value, str(self._day), "("+Content._strip_subject(self._content_list[0]._text) +
-                                                ")" if self._content_list[0]._subject is self._subject else "("+self._content_list[0]._text+")"])
+            if self.operator is Operator.REQUEST or self.operator is Operator.INQUIRE:
+                self.text = str_sub + " ".join([self.operator.value, str_tgt, "("+Content._strip_subject(self.content_list[0].text) +
+                                                ")" if self.content_list[0].subject is self.target else "("+self.content_list[0].text+")"])
+            elif self.operator is Operator.BECAUSE or self.operator is Operator.XOR:
+                self.text = str_sub + " ".join([self.operator.value] + ["("+Content._strip_subject(self.content_list[i].text) +
+                                                                        ")" if self.content_list[i].subject is self.subject else "("+self.content_list[i].text+")" for i in [0, 1]])
+            elif self.operator is Operator.AND or self.operator is Operator.OR:
+                self.text = str_sub + " ".join([self.operator.value] + ["("+Content._strip_subject(c.text)+")" if c.subject is self.subject else "("+c.text+")" for c in self.content_list])
+            elif self.operator is Operator.NOT:
+                self.text = str_sub + " ".join([self.operator.value, "("+Content._strip_subject(self.content_list[0].text) +
+                                                ")" if self.content_list[0].subject is self.subject else "("+self.content_list[0].text+")"])
+            elif self.operator is Operator.DAY:
+                self.text = str_sub + " ".join([self.operator.value, str(self.day), "("+Content._strip_subject(self.content_list[0].text) +
+                                                ")" if self.content_list[0].subject is self.subject else "("+self.content_list[0].text+")"])
 
     _strip_pattern: ClassVar[Pattern[str]] = re.compile(r"^(Agent\[\d+\]|ANY|)\s*([A-Z]+.*)$")
 
@@ -201,16 +162,16 @@ class Content:
             The cloned Content.
         """
         content: Content = Content(ContentBuilder())
-        content._topic = self._topic
-        content._subject = self._subject
-        content._target = self._target
-        content._role = self._role
-        content._result = self._result
-        content._utterance = self._utterance
-        content._operator = self._operator
-        content._content_list = self._content_list
-        content._day = self._day
-        content._text = self._text
+        content.topic = self.topic
+        content.subject = self.subject
+        content.target = self.target
+        content.role = self.role
+        content.result = self.result
+        content.utterance = self.utterance
+        content.operator = self.operator
+        content.content_list = self.content_list
+        content.day = self.day
+        content.text = self.text
         return content
 
     _regex_agent: ClassVar[str] = r"\s+(Agent\[\d+\]|ANY)"
@@ -249,49 +210,49 @@ class Content:
         m_skip: Optional[Match[str]] = Content._skip_pattern.match(trimmed)
         content: Content = Content(SkipContentBuilder())
         if m_skip:
-            content._topic = Topic[m_skip.group(1)]
+            content.topic = Topic[m_skip.group(1)]
         elif m_agree:
-            content._subject = Agent.compile(m_agree.group(1))
-            content._topic = Topic[m_agree.group(2)]
+            content.subject = Agent.compile(m_agree.group(1))
+            content.topic = Topic[m_agree.group(2)]
             if UtteranceType[m_agree.group(3)] is UtteranceType.TALK:
-                content._utterance = Talk(int(m_agree.group(5)), AGENT_NONE, int(m_agree.group(4)), "", 0)
+                content.utterance = Talk(int(m_agree.group(5)), AGENT_NONE, int(m_agree.group(4)), "", 0)
             else:
-                content._utterance = Whisper(int(m_agree.group(5)), AGENT_NONE, int(m_agree.group(4)), "", 0)
+                content.utterance = Whisper(int(m_agree.group(5)), AGENT_NONE, int(m_agree.group(4)), "", 0)
         elif m_estimate:
-            content._subject = Agent.compile(m_estimate.group(1))
-            content._topic = Topic[m_estimate.group(2)]
-            content._target = Agent.compile(m_estimate.group(3))
-            content._role = Role[m_estimate.group(4)]
+            content.subject = Agent.compile(m_estimate.group(1))
+            content.topic = Topic[m_estimate.group(2)]
+            content.target = Agent.compile(m_estimate.group(3))
+            content.role = Role[m_estimate.group(4)]
         elif m_divined:
-            content._subject = Agent.compile(m_divined.group(1))
-            content._topic = Topic[m_divined.group(2)]
-            content._target = Agent.compile(m_divined.group(3))
-            content._result = Species[m_divined.group(4)]
+            content.subject = Agent.compile(m_divined.group(1))
+            content.topic = Topic[m_divined.group(2)]
+            content.target = Agent.compile(m_divined.group(3))
+            content.result = Species[m_divined.group(4)]
         elif m_attack:
-            content._subject = Agent.compile(m_attack.group(1))
-            content._topic = Topic[m_attack.group(2)]
-            content._target = Agent.compile(m_attack.group(3))
+            content.subject = Agent.compile(m_attack.group(1))
+            content.topic = Topic[m_attack.group(2)]
+            content.target = Agent.compile(m_attack.group(3))
         elif m_request:
-            content._topic = Topic.OPERATOR
-            content._subject = Agent.compile(m_request.group(1))
-            content._operator = Operator[m_request.group(2)]
-            content._target = Agent.compile(m_request.group(3))
-            content._content_list = Content._get_contents(m_request.group(4))
+            content.topic = Topic.OPERATOR
+            content.subject = Agent.compile(m_request.group(1))
+            content.operator = Operator[m_request.group(2)]
+            content.target = Agent.compile(m_request.group(3))
+            content.content_list = Content._get_contents(m_request.group(4))
         elif m_because:
-            content._topic = Topic.OPERATOR
-            content._subject = Agent.compile(m_because.group(1))
-            content._operator = Operator[m_because.group(2)]
-            content._content_list = Content._get_contents(m_because.group(3))
-            if content._operator is Operator.REQUEST:
-                content._target = AGENT_ANY if content._content_list[0]._subject is AGENT_UNSPEC else content._content_list[0]._subject
+            content.topic = Topic.OPERATOR
+            content.subject = Agent.compile(m_because.group(1))
+            content.operator = Operator[m_because.group(2)]
+            content.content_list = Content._get_contents(m_because.group(3))
+            if content.operator is Operator.REQUEST:
+                content.target = AGENT_ANY if content.content_list[0].subject is AGENT_UNSPEC else content.content_list[0].subject
         elif m_day:
-            content._topic = Topic.OPERATOR
-            content._subject = Agent.compile(m_day.group(1))
-            content._operator = Operator.DAY
-            content._day = int(m_day.group(2))
-            content._content_list = Content._get_contents(m_day.group(3))
+            content.topic = Topic.OPERATOR
+            content.subject = Agent.compile(m_day.group(1))
+            content.operator = Operator.DAY
+            content.day = int(m_day.group(2))
+            content.content_list = Content._get_contents(m_day.group(3))
         else:
-            content._topic = Topic.Skip
+            content.topic = Topic.Skip
         content._complete_inner_subject()
         content._normalize_text()
         return content
@@ -305,7 +266,7 @@ class Content:
         Returns:
             True if other is equivalent to this, otherwise false.
         """
-        return self._text == other._text
+        return self.text == other.text
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(__o, Content):
