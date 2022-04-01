@@ -17,6 +17,7 @@
 """content module."""
 from __future__ import annotations
 
+import copy
 import re
 from enum import Enum
 from typing import ClassVar, List, Match, Optional, Pattern
@@ -161,17 +162,9 @@ class Content:
         Returns:
             The cloned Content.
         """
-        content: Content = Content(ContentBuilder())
-        content.topic = self.topic
-        content.subject = self.subject
-        content.target = self.target
-        content.role = self.role
-        content.result = self.result
-        content.utterance = self.utterance
-        content.operator = self.operator
-        content.content_list = self.content_list
-        content.day = self.day
-        content.text = self.text
+        content: Content = copy.copy(self)
+        content.utterance = copy.copy(self.utterance)
+        content.content_list = [c.clone() for c in self.content_list]
         return content
 
     _regex_agent: ClassVar[str] = r"\s+(Agent\[\d+\]|ANY)"
