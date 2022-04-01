@@ -78,6 +78,12 @@ class Utterance:
         self.text = text
         self.turn = turn
 
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, Utterance):
+            return NotImplemented
+        return self is __o or (type(self) == type(__o) and self.day == __o.day and self.agent == __o.agent
+                               and self.idx == __o.idx and self.text == __o.text and self.turn == __o.turn)
+
 
 class Talk(Utterance):
     """Talk class."""
