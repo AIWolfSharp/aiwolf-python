@@ -66,3 +66,9 @@ class Vote:
         v.day = vote["day"]
         v.target = Agent(vote["target"])
         return v
+
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, Vote):
+            return NotImplemented
+        return self is __o or (type(self) == type(__o) and self.agent == __o.agent
+                               and self.day == __o.day and self.target == __o.target)

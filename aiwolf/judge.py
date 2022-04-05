@@ -72,3 +72,9 @@ class Judge:
         j.target = Agent(judge['target'])
         j.result = Species[judge['result']]
         return j
+
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, Judge):
+            return NotImplemented
+        return self is __o or (type(self) == type(__o) and self.agent == __o.agent and self.day == __o.day
+                               and self.target == __o.target and self.result == __o.result)
