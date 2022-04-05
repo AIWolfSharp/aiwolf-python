@@ -131,6 +131,11 @@ class GameInfo:
         return list(self.status_map.keys())
 
     @property
+    def alive_agent_list(self) -> List[Agent]:
+        """The list of alive agents."""
+        return [i[0] for i in self.status_map.items() if i[1] == Status.ALIVE]
+
+    @property
     def my_role(self) -> Role:
         """The role of the player who receives this GameInfo."""
         return self.role_map[self.me]
