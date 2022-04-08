@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import TypedDict
 
 from aiwolf.agent import Agent
-from aiwolf.constant import Constant as C
+from aiwolf.constant import AGENT_NONE
 
 
 class _Vote(TypedDict):
@@ -32,7 +32,14 @@ class _Vote(TypedDict):
 class Vote:
     """Information of the vote for execution/attack."""
 
-    def __init__(self, agent: Agent = C.AGENT_NONE, day: int = -1, target: Agent = C.AGENT_NONE) -> None:
+    agent: Agent
+    """The agent that votes."""
+    day: int
+    """The date of the vote."""
+    target: Agent
+    """The agent to be voted on."""
+
+    def __init__(self, agent: Agent = AGENT_NONE, day: int = -1, target: Agent = AGENT_NONE) -> None:
         """Initialize a new instance of Vote.
 
         Args:
@@ -40,9 +47,9 @@ class Vote:
             day(optional): The date of the vote. Defaults to -1.
             target(optional): The agent to be voted on. Defaults to C.AGENT_NONE.
         """
-        self._agent: Agent = agent
-        self._day: int = day
-        self._target: Agent = target
+        self.agent = agent
+        self.day = day
+        self.target = target
 
     @staticmethod
     def compile(vote: _Vote) -> Vote:
@@ -54,24 +61,14 @@ class Vote:
         Returns:
             The Vote converted from the given _Vote.
         """
-
         v = Vote()
-        v._agent = Agent(vote["agent"])
-        v._day = vote["day"]
-        v._target = Agent(vote["target"])
+        v.agent = Agent(vote["agent"])
+        v.day = vote["day"]
+        v.target = Agent(vote["target"])
         return v
 
-    @property
-    def agent(self) -> Agent:
-        """The agent that votes."""
-        return self._agent
-
-    @property
-    def day(self) -> int:
-        """The date of the vote."""
-        return self._day
-
-    @property
-    def target(self) -> Agent:
-        """The agent to be voted on."""
-        return self._target
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, Vote):
+            return NotImplemented
+        return self is __o or (type(self) == type(__o) and self.agent == __o.agent
+                               and self.day == __o.day and self.target == __o.target)

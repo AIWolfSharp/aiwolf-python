@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import TypedDict
 
 from aiwolf.agent import Agent, Species
-from aiwolf.constant import Constant as C
+from aiwolf.constant import AGENT_NONE
 
 
 class _Judge(TypedDict):
@@ -33,7 +33,16 @@ class _Judge(TypedDict):
 class Judge:
     """The judgement whether the player is a human or a werewolf."""
 
-    def __init__(self, agent: Agent = C.AGENT_NONE, day: int = -1, target: Agent = C.AGENT_NONE, result: Species = Species.UNC) -> None:
+    agent: Agent
+    """The agent that judged."""
+    day: int
+    """The date of the judgement."""
+    target: Agent
+    """The judged agent."""
+    result: Species
+    """The result of the judgement."""
+
+    def __init__(self, agent: Agent = AGENT_NONE, day: int = -1, target: Agent = AGENT_NONE, result: Species = Species.UNC) -> None:
         """Initialize a new instance of Judge.
 
         Args:
@@ -42,10 +51,10 @@ class Judge:
             target(optional): The judged agent. Defaults to C.AGENT_NONE.
             result(optional): The result of the judgement. Defaults to Species.UNC.
         """
-        self._agent: Agent = agent
-        self._day: int = day
-        self._target: Agent = target
-        self._result: Species = result
+        self.agent = agent
+        self.day = day
+        self.target = target
+        self.result = result
 
     @staticmethod
     def compile(judge: _Judge) -> Judge:
@@ -58,28 +67,14 @@ class Judge:
             The Judge converted from the given _Judge.
         """
         j: Judge = Judge()
-        j._agent = Agent(judge['agent'])
-        j._day = judge['day']
-        j._target = Agent(judge['target'])
-        j._result = Species[judge['result']]
+        j.agent = Agent(judge['agent'])
+        j.day = judge['day']
+        j.target = Agent(judge['target'])
+        j.result = Species[judge['result']]
         return j
 
-    @property
-    def agent(self) -> Agent:
-        """The agent that judged."""
-        return self._agent
-
-    @property
-    def day(self) -> int:
-        """The date of the judgement."""
-        return self._day
-
-    @property
-    def target(self) -> Agent:
-        """The judged agent."""
-        return self._target
-
-    @property
-    def result(self) -> Species:
-        """The result of the judgement."""
-        return self._result
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, Judge):
+            return NotImplemented
+        return self is __o or (type(self) == type(__o) and self.agent == __o.agent and self.day == __o.day
+                               and self.target == __o.target and self.result == __o.result)

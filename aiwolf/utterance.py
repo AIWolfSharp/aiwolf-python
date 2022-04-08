@@ -18,10 +18,10 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TypedDict
+from typing import Final, TypedDict
 
 from aiwolf.agent import Agent
-from aiwolf.constant import Constant as C
+from aiwolf.constant import AGENT_NONE
 
 
 class UtteranceType(Enum):
@@ -45,13 +45,24 @@ class _Utterance(TypedDict):
 class Utterance:
     """Class for utterance."""
 
-    OVER = "Over"
+    day: int
+    """The date of this utterance."""
+    agent: Agent
+    """The agent who uttered."""
+    idx: int
+    """The index number of this utterance."""
+    text: str
+    """The contents of this utterance."""
+    turn: int
+    """The turn of this utterance."""
+
+    OVER: Final[str] = "Over"
     """The string that nothing to say."""
 
-    SKIP = "Skip"
+    SKIP: Final[str] = "Skip"
     """The string that means skip this turn."""
 
-    def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
+    def __init__(self, day: int = -1, agent: Agent = AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
         """Initialize a new instance of Utterance.
 
         Args:
@@ -61,42 +72,23 @@ class Utterance:
             text(optional): The uttered text. Defaults to "".
             turn(optional): The turn of the utterance. Defaults to -1.
         """
-        self._day: int = day
-        self._agent:  Agent = agent
-        self._idx: int = idx
-        self._text: str = text
-        self._turn: int = turn
+        self.day = day
+        self.agent = agent
+        self.idx = idx
+        self.text = text
+        self.turn = turn
 
-    @property
-    def day(self) -> int:
-        """The date of this utterance."""
-        return self._day
-
-    @property
-    def agent(self) -> Agent:
-        """The agent who uttered."""
-        return self._agent
-
-    @property
-    def idx(self) -> int:
-        """The index number of this utterance."""
-        return self._idx
-
-    @property
-    def text(self) -> str:
-        """The contents of this utterance."""
-        return self._text
-
-    @property
-    def turn(self) -> int:
-        """The turn of this utterance."""
-        return self._turn
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, Utterance):
+            return NotImplemented
+        return self is __o or (type(self) == type(__o) and self.day == __o.day and self.agent == __o.agent
+                               and self.idx == __o.idx and self.text == __o.text and self.turn == __o.turn)
 
 
 class Talk(Utterance):
     """Talk class."""
 
-    def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
+    def __init__(self, day: int = -1, agent: Agent = AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
         """Initialize a new instance of Talk.
 
         Args:
@@ -119,18 +111,18 @@ class Talk(Utterance):
             The Talk converted from the given _Utterance.
         """
         t = Talk()
-        t._day = utterance["day"]
-        t._agent = Agent(utterance["agent"])
-        t._idx = utterance["idx"]
-        t._text = utterance["text"]
-        t._turn = utterance["turn"]
+        t.day = utterance["day"]
+        t.agent = Agent(utterance["agent"])
+        t.idx = utterance["idx"]
+        t.text = utterance["text"]
+        t.turn = utterance["turn"]
         return t
 
 
 class Whisper(Utterance):
     """Whisper class."""
 
-    def __init__(self, day: int = -1, agent: Agent = C.AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
+    def __init__(self, day: int = -1, agent: Agent = AGENT_NONE, idx: int = -1, text: str = "", turn: int = -1) -> None:
         """Initialize a new instance of Whisper.
 
         Args:
@@ -153,9 +145,9 @@ class Whisper(Utterance):
             The Whisper converted from the given _Utterance.
         """
         w = Whisper()
-        w._day = utterance["day"]
-        w._agent = Agent(utterance["agent"])
-        w._idx = utterance["idx"]
-        w._text = utterance["text"]
-        w._turn = utterance["turn"]
+        w.day = utterance["day"]
+        w.agent = Agent(utterance["agent"])
+        w.idx = utterance["idx"]
+        w.text = utterance["text"]
+        w.turn = utterance["turn"]
         return w
