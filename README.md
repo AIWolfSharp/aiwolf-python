@@ -8,8 +8,7 @@ pip install git+https://github.com/AIWolfSharp/aiwolf-python.git
 ## Sample
 Sample agent which uses this package is published at [AIWolfSharp/sample-python-agent](https://github.com/AIWolfSharp/sample-python-agent).
 ## Tutorial
-We are planning to make a tutorial for creating AI Werewolf agent using this package.
-Please be patient.
+* You can see a tutorial for making Python agent [here](http://aiwolf.org/en/howtowagent).
 ## Links
 * [Artificial Intelligence based Werewolf|Let's play "Werewolf" with AI!](http://aiwolf.org/en/)
 * [The 4th International AIWolf Contest](http://aiwolf.org/en/4th-international-aiwolf-contest)
