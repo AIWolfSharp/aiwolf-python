@@ -3,7 +3,7 @@ import setuptools
 setuptools.setup(
     name="aiwolf",
     version="1.2.0",
-    python_requires="=3.7.*",
+    python_requires=">=3.7",
     author="OTSUKI Takashi",
     author_email="aiwolfsharp@outlook.com",
     url="https://github.com/AIWolfSharp/aiwolf-python",
