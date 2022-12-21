@@ -16,7 +16,7 @@
 # limitations under the License.
 """constant module."""
 import warnings
-from typing import Final
+from typing_extensions import Final
 
 from aiwolf.agent import Agent
 

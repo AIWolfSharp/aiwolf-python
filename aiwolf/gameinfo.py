@@ -15,7 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """gameinfo module."""
-from typing import Dict, List, Optional, TypedDict
+from typing import Dict, List, Optional
+from typing_extensions import TypedDict
 
 from aiwolf.agent import Agent, Role, Status
 from aiwolf.judge import Judge, _Judge

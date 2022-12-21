@@ -18,7 +18,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Final, TypedDict
+from typing_extensions import Final, TypedDict
 
 from aiwolf.agent import Agent
 from aiwolf.constant import AGENT_NONE

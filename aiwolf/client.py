@@ -17,7 +17,8 @@
 """client module."""
 import json
 import socket
-from typing import List, Optional, TypedDict
+from typing import List, Optional
+from typing_extensions import TypedDict
 
 from aiwolf.gameinfo import GameInfo, _GameInfo
 from aiwolf.gamesetting import GameSetting, _GameSetting

@@ -15,7 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """gamesetting module."""
-from typing import Dict, TypedDict
+from typing import Dict
+from typing_extensions import TypedDict
 
 from aiwolf.agent import Role
 
