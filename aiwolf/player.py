@@ -22,6 +22,8 @@ from aiwolf.content import Content
 from aiwolf.gameinfo import GameInfo
 from aiwolf.gamesetting import GameSetting
 
+from typing import Union
+
 
 class AbstractPlayer(ABC):
     """Abstract class that defines the functions every player agents must have."""
@@ -83,7 +85,7 @@ class AbstractPlayer(ABC):
         pass
 
     @abstractmethod
-    def talk(self) -> Content:
+    def talk(self) -> Union[Content,str]:
         """Return this player's talk.
 
         Returns:
@@ -108,7 +110,7 @@ class AbstractPlayer(ABC):
         pass
 
     @abstractmethod
-    def whisper(self) -> Content:
+    def whisper(self) -> Union[Content,str]:
         """Return this player's whisper.
 
         Returns:

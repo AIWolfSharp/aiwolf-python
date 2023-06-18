@@ -139,9 +139,17 @@ class TcpipClient:
             elif request == "DIVINE":
                 return json.dumps({"agentIdx": self.player.divine().agent_idx}, separators=(",", ":"))
             elif request == "TALK":
-                return self.player.talk().text
+                talk = self.player.talk()
+                if type(talk) == str:
+                    return talk
+                else:
+                    return talk.text
             elif request == "WHISPER":
-                return self.player.whisper().text
+                whisper = self.player.whisper()
+                if type(whisper) == str:
+                    return whisper
+                else:
+                    return whisper.text
             return None
 
     def _is_json_complate(self,responses:bytes) -> bool:
