@@ -45,7 +45,7 @@ class TcpipClient:
     last_game_info: Optional[GameInfo]
     sock: Optional[socket.socket]
 
-    def __init__(self, player: AbstractPlayer, name: Optional[str], host: str, port: int, request_role: str) -> None:
+    def __init__(self, player: AbstractPlayer, name: Optional[str], host: str, port: int, request_role: str, total_games:int = 10, socket_timeout:int=300) -> None:
         """Initialize a new instance of TcpipClient.
 
         Args:
@@ -54,6 +54,8 @@ class TcpipClient:
             host: The hostname of the server.
             port: The port number the server is waiting on.
             request_role: The name of role that the player agent wants to be.
+            total_games: The number of games to be played.(default: 10)
+            socket_timeout: The timeout value of socket connection.(default: 300)
         """
         self.player = player
         self.name = name
@@ -63,6 +65,13 @@ class TcpipClient:
         self.game_info = None
         self.last_game_info = None
         self.sock = None
+
+        self.total_games = total_games
+        self.socket_timeout = socket_timeout
+        self.game_start_count = 0
+        self.game_end_count = 0
+        
+
 
     def _send_response(self, response: Optional[str]) -> None:
         if isinstance(self.sock, socket.socket) and isinstance(response, str):
@@ -105,6 +114,8 @@ class TcpipClient:
                     if whisper.day > last_whisper.day or (whisper.day == last_whisper.day and whisper.idx > last_whisper.idx):
                         whisper_list.append(whisper)
         if request == "INITIALIZE":
+            self.game_start_count += 1 #ゲームが始まったらカウントを増やす
+            
             game_setting0: Optional[_GameSetting] = packet["gameSetting"]
             if game_setting0 is not None:
                 self.player.initialize(self.game_info, GameSetting(game_setting0))
@@ -118,6 +129,8 @@ class TcpipClient:
                 return None
             elif request == "FINISH":
                 self.player.finish()
+                if self.game_start_count -1 == self.game_end_count:
+                    self.game_end_count += 1 #ゲームが終わったらカウントを増やす
                 return None
             elif request == "VOTE":
                 return json.dumps({"agentIdx": self.player.vote().agent_idx}, separators=(",", ":"))
@@ -128,33 +141,75 @@ class TcpipClient:
             elif request == "DIVINE":
                 return json.dumps({"agentIdx": self.player.divine().agent_idx}, separators=(",", ":"))
             elif request == "TALK":
-                return self.player.talk().text
+                talk = self.player.talk()
+                if type(talk) == str:
+                    return talk
+                else:
+                    return talk.text
             elif request == "WHISPER":
-                return self.player.whisper().text
+                whisper = self.player.whisper()
+                if type(whisper) == str:
+                    return whisper
+                else:
+                    return whisper.text
             return None
+
+    def _is_json_complate(self,responses:bytes) -> bool:
+        try:
+            responses = responses.decode("utf-8")
+        except:
+            return False
+        
+        if responses == "":
+            return False
+
+        cnt = 0
+
+        for word in responses:
+            if word == "{":
+                cnt += 1
+            elif word == "}":
+                cnt -= 1
+        
+        return cnt == 0
+    
+    def _get_json(self) -> str:
+        responses = b""
+        retry_count = 0
+        max_retry_count = 1e5
+        while not self._is_json_complate(responses=responses):  
+            response = self.sock.recv(8192)
+            #待機時間が長いときは、一定回数以上のリトライを許容する        
+            if response == b"":
+                retry_count += 1
+                if retry_count > max_retry_count:
+                    raise RuntimeError("socket connection broken")
+            else:
+                retry_count = 0
+            
+            responses += response
+
+        return responses.decode("utf-8")
 
     def connect(self) -> None:
         """Connect to the server."""
+        # socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(0.001)
+        self.sock.settimeout(self.socket_timeout)
+        # connect
         self.sock.connect((self.host, self.port))
-        line: str = ""
-        while True:
-            try:
-                line += self.sock.recv(8192).decode("utf-8")
-                if line == "":
-                    break
-            except socket.timeout:
-                pass
-            line_list: List[str] = line.split("\n", 1)
-            for i in range(len(line_list) - 1):
-                if len(line_list[i]) > 0:
-                    self._send_response(self._get_response(json.loads(line_list[i])))
-                line = line_list[-1]
-            try:
-                self._send_response(self._get_response(json.loads(line)))
-                line = ""
-            except ValueError:
-                pass
+        
+        while self.game_end_count < self.total_games:
+            json_str = self._get_json()
+            if json_str == "":
+                break
+        
+            line_list = json_str.split("\n")
+            for one_line in line_list:
+                if len(one_line) > 0:
+                    json_received = json.loads(one_line)
+                    self._send_response(self._get_response(json_received))
+
         self.sock.close()
+                
         return None
