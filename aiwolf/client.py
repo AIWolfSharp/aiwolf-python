@@ -45,7 +45,7 @@ class TcpipClient:
     last_game_info: Optional[GameInfo]
     sock: Optional[socket.socket]
 
-    def __init__(self, player: AbstractPlayer, name: Optional[str], host: str, port: int, request_role: str, total_games:int = 5) -> None:
+    def __init__(self, player: AbstractPlayer, name: Optional[str], host: str, port: int, request_role: str, total_games:int = 10, socket_timeout:int=300) -> None:
         """Initialize a new instance of TcpipClient.
 
         Args:
@@ -54,7 +54,8 @@ class TcpipClient:
             host: The hostname of the server.
             port: The port number the server is waiting on.
             request_role: The name of role that the player agent wants to be.
-            total_games: The number of games to be played.
+            total_games: The number of games to be played.(default: 10)
+            socket_timeout: The timeout value of socket connection.(default: 300)
         """
         self.player = player
         self.name = name
@@ -66,6 +67,7 @@ class TcpipClient:
         self.sock = None
 
         self.total_games = total_games
+        self.socket_timeout = socket_timeout
         self.game_start_count = 0
         self.game_end_count = 0
         
@@ -193,7 +195,7 @@ class TcpipClient:
         """Connect to the server."""
         # socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(10)
+        self.sock.settimeout(self.socket_timeout)
         # connect
         self.sock.connect((self.host, self.port))
         
