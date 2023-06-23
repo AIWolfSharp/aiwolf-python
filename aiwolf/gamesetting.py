@@ -92,7 +92,11 @@ class GameSetting:
         """
         self.enable_no_attack = game_setting["enableNoAttack"]
         self.enable_no_execution = game_setting["enableNoExecution"]
-        self.enable_role_request = game_setting["enableRoleRequest"]
+        #リモートサーバーでenableRoleRequestが送られてこないので、ない場合にエラーにならないように対応
+        if "enableRoleRequest" in game_setting:
+            self.enable_role_request = game_setting["enableRoleRequest"]
+        else:
+            self.enable_role_request = False
         self.max_attack_revote = game_setting["maxAttackRevote"]
         self.max_revote = game_setting["maxRevote"]
         self.max_skip = game_setting["maxSkip"]
