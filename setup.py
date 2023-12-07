@@ -2,7 +2,7 @@ import setuptools
  
 setuptools.setup(
     name="aiwolf",
-    version="1.2.0",
+    version="1.2.1",
     author="OTSUKI Takashi",
     author_email="aiwolfsharp@outlook.com",
     url="https://github.com/AIWolfSharp/aiwolf-python",
@@ -11,6 +11,9 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     license="Apache Software License",
     packages=setuptools.find_packages(),
+    package_data={
+        "aiwolf": ["py.typed"],
+    },
     classifiers=[ # see https://pypi.org/pypi?:action=list_classifiers
         # "Development Status :: 3 - Alpha",
         # "Development Status :: 4 - Beta",
