@@ -36,15 +36,6 @@ class _Packet(TypedDict):
 class TcpipClient:
     """Client agent that communiates with the server via TCP/IP connection."""
 
-    player: AbstractPlayer
-    name: Optional[str]
-    host: str
-    port: int
-    request_role: str
-    game_info: Optional[GameInfo]
-    last_game_info: Optional[GameInfo]
-    sock: Optional[socket.socket]
-
     def __init__(self, player: AbstractPlayer, name: Optional[str], host: str, port: int, request_role: str) -> None:
         """Initialize a new instance of TcpipClient.
 
@@ -55,14 +46,14 @@ class TcpipClient:
             port: The port number the server is waiting on.
             request_role: The name of role that the player agent wants to be.
         """
-        self.player = player
-        self.name = name
-        self.host = host
-        self.port = port
-        self.request_role = request_role
-        self.game_info = None
-        self.last_game_info = None
-        self.sock = None
+        self.player: AbstractPlayer = player
+        self.name: Optional[str] = name
+        self.host: str = host
+        self.port: int = port
+        self.request_role: str = request_role
+        self.game_info: Optional[GameInfo] = None
+        self.last_game_info: Optional[GameInfo] = None
+        self.sock: Optional[socket.socket] = None
 
     def _send_response(self, response: Optional[str]) -> None:
         if isinstance(self.sock, socket.socket) and isinstance(response, str):

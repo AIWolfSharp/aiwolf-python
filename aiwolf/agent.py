@@ -29,8 +29,6 @@ class Agent:
 
     _agent_pattern: ClassVar[Pattern[str]] = re.compile(r"(Agent\[(\d+)\]|ANY)")
 
-    _agent_idx: int
-
     @staticmethod
     def compile(input: str) -> Agent:
         """Convert the string into the corresponding Agent.
@@ -63,7 +61,7 @@ class Agent:
         Args:
             idx: The index number of the Agent.
         """
-        self._agent_idx = idx
+        self._agent_idx: int = idx
 
     @property
     def agent_idx(self) -> int:

@@ -33,15 +33,6 @@ class _Judge(TypedDict):
 class Judge:
     """The judgement whether the player is a human or a werewolf."""
 
-    agent: Agent
-    """The agent that judged."""
-    day: int
-    """The date of the judgement."""
-    target: Agent
-    """The judged agent."""
-    result: Species
-    """The result of the judgement."""
-
     def __init__(self, agent: Agent = AGENT_NONE, day: int = -1, target: Agent = AGENT_NONE, result: Species = Species.UNC) -> None:
         """Initialize a new instance of Judge.
 
@@ -51,10 +42,17 @@ class Judge:
             target(optional): The judged agent. Defaults to C.AGENT_NONE.
             result(optional): The result of the judgement. Defaults to Species.UNC.
         """
-        self.agent = agent
-        self.day = day
-        self.target = target
-        self.result = result
+        self.agent: Agent = agent
+        """The agent that judged."""
+
+        self.day: int = day
+        """The date of the judgement."""
+
+        self.target: Agent = target
+        """The judged agent."""
+
+        self.result: Species = result
+        """The result of the judgement."""
 
     @staticmethod
     def compile(judge: _Judge) -> Judge:

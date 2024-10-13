@@ -45,17 +45,6 @@ class _Utterance(TypedDict):
 class Utterance:
     """Class for utterance."""
 
-    day: int
-    """The date of this utterance."""
-    agent: Agent
-    """The agent who uttered."""
-    idx: int
-    """The index number of this utterance."""
-    text: str
-    """The contents of this utterance."""
-    turn: int
-    """The turn of this utterance."""
-
     OVER: Final[str] = "Over"
     """The string that nothing to say."""
 
@@ -72,11 +61,20 @@ class Utterance:
             text(optional): The uttered text. Defaults to "".
             turn(optional): The turn of the utterance. Defaults to -1.
         """
-        self.day = day
-        self.agent = agent
-        self.idx = idx
-        self.text = text
-        self.turn = turn
+        self.day: int = day
+        """The date of this utterance."""
+
+        self.agent: Agent = agent
+        """The agent who uttered."""
+
+        self.idx: int = idx
+        """The index number of this utterance."""
+
+        self.text: str = text
+        """The contents of this utterance."""
+
+        self.turn: int = turn
+        """The turn of this utterance."""
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(__o, Utterance):

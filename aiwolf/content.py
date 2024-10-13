@@ -30,27 +30,6 @@ from aiwolf.utterance import Talk, Utterance, UtteranceType, Whisper
 class Content:
     """Content class expressing the content of an uteerance."""
 
-    topic: Topic
-    """The topic of this Content."""
-    subject: Agent
-    """The Agent that is the subject of this Content."""
-    target: Agent
-    """The Agent that is the object of this Content."""
-    role: Role
-    """The role this Content refers to."""
-    result: Species
-    """The species this Content refers to."""
-    utterance: Utterance
-    """The utterance this Content refers to."""
-    operator: Operator
-    """The operator in this Content."""
-    content_list: List[Content]
-    """The list of the operands in this Content."""
-    day: int
-    """The date added to the operand in this Content."""
-    text: str
-    """The text representing this Content."""
-
     @staticmethod
     def _get_contents(input: str) -> List[Content]:
         return [Content.compile(s) for s in Content._get_content_strings(input)]
@@ -78,16 +57,36 @@ class Content:
         Args:
             builder: A ContentBuilder used for initialization.
         """
-        self.topic = builder._topic
-        self.subject = builder._subject
-        self.target = builder._target
-        self.role = builder._role
-        self.result = builder._result
-        self.utterance = builder._utterance
-        self.operator = builder._operator
-        self.content_list = builder._content_list
-        self.day = builder._day
-        self.text = ""
+        self.topic: Topic = builder._topic
+        """The topic of this Content."""
+
+        self.subject: Agent = builder._subject
+        """The Agent that is the subject of this Content."""
+
+        self.target: Agent = builder._target
+        """The Agent that is the object of this Content."""
+
+        self.role: Role = builder._role
+        """The role this Content refers to."""
+
+        self.result: Species = builder._result
+        """The species this Content refers to."""
+
+        self.utterance: Utterance = builder._utterance
+        """The utterance this Content refers to."""
+
+        self.operator: Operator = builder._operator
+        """The operator in this Content."""
+
+        self.content_list: List[Content] = builder._content_list
+        """The list of the operands in this Content."""
+
+        self.day: int = builder._day
+        """The date added to the operand in this Content."""
+
+        self.text: str = ""
+        """The text representing this Content."""
+
         self._complete_inner_subject()
         self._normalize_text()
 
@@ -356,27 +355,17 @@ class Operator(Enum):
 class ContentBuilder:
     """A class for the builder classes to build Content of all kinds."""
 
-    _subject: Agent
-    _target: Agent
-    _topic: Topic
-    _role: Role
-    _result: Species
-    _utterance: Utterance
-    _operator: Operator
-    _content_list: List[Content]
-    _day: int
-
     def __init__(self) -> None:
         """Initialize a new instance of ContentBuilder."""
-        self._subject = AGENT_UNSPEC
-        self._target = AGENT_ANY
-        self._topic = Topic.DUMMY
-        self._role = Role.UNC
-        self._result = Species.UNC
-        self._utterance = Utterance()
-        self._operator = Operator.NOP
-        self._content_list = []
-        self._day = -1
+        self._subject: Agent = AGENT_UNSPEC
+        self._target: Agent = AGENT_ANY
+        self._topic: Topic = Topic.DUMMY
+        self._role: Role = Role.UNC
+        self._result: Species = Species.UNC
+        self._utterance: Utterance = Utterance()
+        self._operator: Operator = Operator.NOP
+        self._content_list: List[Content] = []
+        self._day: int = -1
 
 
 class AgreeContentBuilder(ContentBuilder):

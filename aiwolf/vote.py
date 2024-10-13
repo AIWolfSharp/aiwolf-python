@@ -32,13 +32,6 @@ class _Vote(TypedDict):
 class Vote:
     """Information of the vote for execution/attack."""
 
-    agent: Agent
-    """The agent that votes."""
-    day: int
-    """The date of the vote."""
-    target: Agent
-    """The agent to be voted on."""
-
     def __init__(self, agent: Agent = AGENT_NONE, day: int = -1, target: Agent = AGENT_NONE) -> None:
         """Initialize a new instance of Vote.
 
@@ -47,9 +40,14 @@ class Vote:
             day(optional): The date of the vote. Defaults to -1.
             target(optional): The agent to be voted on. Defaults to C.AGENT_NONE.
         """
-        self.agent = agent
-        self.day = day
-        self.target = target
+        self.agent: Agent = agent
+        """The agent that votes."""
+
+        self.day: int = day
+        """The date of the vote."""
+
+        self.target: Agent = target
+        """The agent to be voted on."""
 
     @staticmethod
     def compile(vote: _Vote) -> Vote:
