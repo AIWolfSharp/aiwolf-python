@@ -117,6 +117,8 @@ class Content:
         if self.topic is not Topic.OPERATOR:
             if self.topic is Topic.DUMMY:
                 self.text = ""
+            elif self.topic is Topic.RAW:
+                pass
             elif self.topic is Topic.Skip:
                 self.text = Utterance.SKIP
             elif self.topic is Topic.Over:
@@ -320,6 +322,9 @@ class Topic(Enum):
     OPERATOR = "OPERATOR"
     """Operator."""
 
+    RAW = "RAW"
+    """Containing raw text."""
+
 
 class Operator(Enum):
     """Enumeration type for operator."""
@@ -366,6 +371,7 @@ class ContentBuilder:
         self._operator: Operator = Operator.NOP
         self._content_list: list[Content] = []
         self._day: int = -1
+        self._text: str = ""
 
 
 class AgreeContentBuilder(ContentBuilder):
@@ -727,6 +733,16 @@ class OverContentBuilder(ContentBuilder):
         """Initialize a new instance of OverContentBuilder."""
         super().__init__()
         self._topic = Topic.Over
+
+
+class RawContentBuilder(ContentBuilder):
+    """Builder class for expressing an raw text."""
+
+    def __init__(self, text: str) -> None:
+        """Initialize a new instance of RawContentBuilder."""
+        super().__init__()
+        self._topic = Topic.RAW
+        self._text = text
 
 
 class EmptyContentBuilder(ContentBuilder):
