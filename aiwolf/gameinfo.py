@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """gameinfo module."""
-from typing import Dict, List, Optional, TypedDict
+from typing import Optional, TypedDict
 
 from aiwolf.agent import Agent, Role, Status
 from aiwolf.judge import Judge, _Judge
@@ -25,26 +25,26 @@ from aiwolf.vote import Vote, _Vote
 
 class _GameInfo(TypedDict):
     agent: int
-    attackVoteList: List[_Vote]
+    attackVoteList: list[_Vote]
     attackedAgent: int
     cursedFox: int
     day: int
     divineResult: _Judge
     executedAgent: int
-    existingRoleList: List[str]
+    existingRoleList: list[str]
     guardedAgent: int
-    lastDeadAgentList: List[int]
-    latestAttackVoteList: List[_Vote]
+    lastDeadAgentList: list[int]
+    latestAttackVoteList: list[_Vote]
     latestExecutedAgent: int
-    latestVoteList: List[_Vote]
+    latestVoteList: list[_Vote]
     mediumResult: _Judge
-    remainTalkMap: Dict[str, int]
-    remainWhisperMap: Dict[str, int]
-    roleMap: Dict[str, str]
-    statusMap: Dict[str, str]
-    talkList: List[_Utterance]
-    voteList: List[_Vote]
-    whisperList: List[_Utterance]
+    remainTalkMap: dict[str, int]
+    remainWhisperMap: dict[str, int]
+    roleMap: dict[str, str]
+    statusMap: dict[str, str]
+    talkList: list[_Utterance]
+    voteList: list[_Vote]
+    whisperList: list[_Utterance]
 
 
 class GameInfo:
@@ -59,7 +59,7 @@ class GameInfo:
         self.me: Agent = Agent(game_info["agent"])
         """The agent who recieves this GameInfo."""
 
-        self.attack_vote_list: List[Vote] = [Vote.compile(v) for v in game_info["attackVoteList"]]
+        self.attack_vote_list: list[Vote] = [Vote.compile(v) for v in game_info["attackVoteList"]]
         """The list of votes for attack."""
 
         self.attacked_agent: Optional[Agent] = GameInfo._get_agent(game_info["attackedAgent"])
@@ -77,46 +77,46 @@ class GameInfo:
         self.executed_agent: Optional[Agent] = GameInfo._get_agent(game_info["executedAgent"])
         """The agent executed last night."""
 
-        self.existing_role_list: List[Role] = [Role[r] for r in game_info["existingRoleList"]]
+        self.existing_role_list: list[Role] = [Role[r] for r in game_info["existingRoleList"]]
         """The list of existing roles in this game."""
 
         self.guarded_agent: Optional[Agent] = GameInfo._get_agent(game_info["guardedAgent"])
         """The agent guarded last night."""
 
-        self.last_dead_agent_list: List[Agent] = [Agent(a) for a in game_info["lastDeadAgentList"]]
+        self.last_dead_agent_list: list[Agent] = [Agent(a) for a in game_info["lastDeadAgentList"]]
         """The list of agents who died last night."""
 
-        self.latest_attack_vote_list: List[Vote] = [Vote.compile(v) for v in game_info["latestAttackVoteList"]]
+        self.latest_attack_vote_list: list[Vote] = [Vote.compile(v) for v in game_info["latestAttackVoteList"]]
         """The latest list of votes for attack."""
 
         self.latest_executed_agent: Optional[Agent] = GameInfo._get_agent(game_info["latestExecutedAgent"])
         """The latest executed agent."""
 
-        self.latest_vote_list: List[Vote] = [Vote.compile(v) for v in game_info["latestVoteList"]]
+        self.latest_vote_list: list[Vote] = [Vote.compile(v) for v in game_info["latestVoteList"]]
         """The latest list of votes for execution."""
 
         self.medium_result: Optional[Judge] = Judge.compile(game_info["mediumResult"]) if game_info["mediumResult"] is not None else None
         """The result of the inquest."""
 
-        self.remain_talk_map: Dict[Agent, int] = {Agent(int(k)): v for k, v in game_info["remainTalkMap"].items()}
+        self.remain_talk_map: dict[Agent, int] = {Agent(int(k)): v for k, v in game_info["remainTalkMap"].items()}
         """The number of opportunities to talk remaining."""
 
-        self.remain_whisper_map: Dict[Agent, int] = {Agent(int(k)): v for k, v in game_info["remainWhisperMap"].items()}
+        self.remain_whisper_map: dict[Agent, int] = {Agent(int(k)): v for k, v in game_info["remainWhisperMap"].items()}
         """The number of opportunities to whisper remaining."""
 
-        self.role_map: Dict[Agent, Role] = {Agent(int(k)): Role[v] for k, v in game_info["roleMap"].items()}
+        self.role_map: dict[Agent, Role] = {Agent(int(k)): Role[v] for k, v in game_info["roleMap"].items()}
         """The known roles of agents."""
 
-        self.status_map: Dict[Agent, Status] = {Agent(int(k)): Status[v] for k, v in game_info["statusMap"].items()}
+        self.status_map: dict[Agent, Status] = {Agent(int(k)): Status[v] for k, v in game_info["statusMap"].items()}
         """The statuses of all agents."""
 
-        self.talk_list: List[Talk] = [Talk.compile(u) for u in game_info["talkList"]]
+        self.talk_list: list[Talk] = [Talk.compile(u) for u in game_info["talkList"]]
         """The list of today's talks."""
 
-        self.vote_list: List[Vote] = [Vote.compile(v) for v in game_info["voteList"]]
+        self.vote_list: list[Vote] = [Vote.compile(v) for v in game_info["voteList"]]
         """The list of votes for execution."""
 
-        self.whisper_list: List[Whisper] = [Whisper.compile(u) for u in game_info["whisperList"]]
+        self.whisper_list: list[Whisper] = [Whisper.compile(u) for u in game_info["whisperList"]]
         """The list of today's whispers."""
 
     @staticmethod
@@ -124,12 +124,12 @@ class GameInfo:
         return None if idx < 0 else Agent(idx)
 
     @property
-    def agent_list(self) -> List[Agent]:
+    def agent_list(self) -> list[Agent]:
         """The list of existing agents."""
         return list(self.status_map.keys())
 
     @property
-    def alive_agent_list(self) -> List[Agent]:
+    def alive_agent_list(self) -> list[Agent]:
         """The list of alive agents."""
         return [i[0] for i in self.status_map.items() if i[1] == Status.ALIVE]
 

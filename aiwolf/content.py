@@ -20,7 +20,7 @@ from __future__ import annotations
 import copy
 import re
 from enum import Enum
-from typing import ClassVar, List, Match, Optional, Pattern
+from typing import ClassVar, Match, Optional, Pattern
 
 from aiwolf.agent import Agent, Role, Species
 from aiwolf.constant import AGENT_ANY, AGENT_NONE, AGENT_UNSPEC
@@ -31,12 +31,12 @@ class Content:
     """Content class expressing the content of an uteerance."""
 
     @staticmethod
-    def _get_contents(input: str) -> List[Content]:
+    def _get_contents(input: str) -> list[Content]:
         return [Content.compile(s) for s in Content._get_content_strings(input)]
 
     @staticmethod
-    def _get_content_strings(input: str) -> List[str]:
-        strings: List[str] = []
+    def _get_content_strings(input: str) -> list[str]:
+        strings: list[str] = []
         length: int = len(input)
         stack_ptr: int = 0
         start: int = 0
@@ -78,7 +78,7 @@ class Content:
         self.operator: Operator = builder._operator
         """The operator in this Content."""
 
-        self.content_list: List[Content] = builder._content_list
+        self.content_list: list[Content] = builder._content_list
         """The list of the operands in this Content."""
 
         self.day: int = builder._day
@@ -138,7 +138,7 @@ class Content:
                 self.text = str_sub + " ".join([self.operator.value] + ["("+Content._strip_subject(self.content_list[i].text) +
                                                                         ")" if self.content_list[i].subject is self.subject else "("+self.content_list[i].text+")" for i in [0, 1]])
             elif self.operator is Operator.AND or self.operator is Operator.OR:
-                self.text = str_sub + " ".join([self.operator.value] + ["("+Content._strip_subject(c.text)+")" if c.subject is self.subject else "("+c.text+")" for c in self.content_list])
+                self.text = str_sub + " ".join([self.operator.value] + ["("+Content._strip_subject(c.text) + ")" if c.subject is self.subject else "("+c.text+")" for c in self.content_list])
             elif self.operator is Operator.NOT:
                 self.text = str_sub + " ".join([self.operator.value, "("+Content._strip_subject(self.content_list[0].text) +
                                                 ")" if self.content_list[0].subject is self.subject else "("+self.content_list[0].text+")"])
@@ -364,7 +364,7 @@ class ContentBuilder:
         self._result: Species = Species.UNC
         self._utterance: Utterance = Utterance()
         self._operator: Operator = Operator.NOP
-        self._content_list: List[Content] = []
+        self._content_list: list[Content] = []
         self._day: int = -1
 
 
@@ -627,7 +627,7 @@ class BecauseContentBuilder(ContentBuilder):
 class AndContentBuilder(ContentBuilder):
     """Builder class for expressing a conjunctive clause."""
 
-    def __init__(self, contents: List[Content], *, subject: Agent = AGENT_UNSPEC) -> None:
+    def __init__(self, contents: list[Content], *, subject: Agent = AGENT_UNSPEC) -> None:
         """Initialize a new instance of AndContentBuilder.
 
         Args:
@@ -649,7 +649,7 @@ class AndContentBuilder(ContentBuilder):
 class OrContentBuilder(AndContentBuilder):
     """Builder class for expressing a disjunctive clause."""
 
-    def __init__(self, contents: List[Content], *, subject: Agent = AGENT_UNSPEC) -> None:
+    def __init__(self, contents: list[Content], *, subject: Agent = AGENT_UNSPEC) -> None:
         """Initialize a new instance of OrContentBuilder.
 
         Args:

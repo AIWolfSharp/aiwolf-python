@@ -17,7 +17,7 @@
 """client module."""
 import json
 import socket
-from typing import List, Optional, TypedDict
+from typing import Optional, TypedDict
 
 from aiwolf.gameinfo import GameInfo, _GameInfo
 from aiwolf.gamesetting import GameSetting, _GameSetting
@@ -29,8 +29,8 @@ class _Packet(TypedDict):
     gameInfo: Optional[_GameInfo]
     gameSetting: Optional[_GameSetting]
     request: str
-    talkHistory: Optional[List[_Utterance]]
-    whisperHistory: Optional[List[_Utterance]]
+    talkHistory: Optional[list[_Utterance]]
+    whisperHistory: Optional[list[_Utterance]]
 
 
 class TcpipClient:
@@ -73,22 +73,22 @@ class TcpipClient:
             self.last_game_info = self.game_info
         if self.game_info is None:
             return None
-        talk_history0: Optional[List[_Utterance]] = packet["talkHistory"]
+        talk_history0: Optional[list[_Utterance]] = packet["talkHistory"]
         if talk_history0 is not None:
             for talk0 in talk_history0:
                 talk: Talk = Talk.compile(talk0)
-                talk_list: List[Talk] = self.game_info.talk_list
+                talk_list: list[Talk] = self.game_info.talk_list
                 if len(talk_list) == 0:
                     talk_list.append(talk)
                 else:
                     last_talk: Talk = talk_list[-1]
                     if talk.day > last_talk.day or (talk.day == last_talk.day and talk.idx > last_talk.idx):
                         talk_list.append(talk)
-        whisper_history0: Optional[List[_Utterance]] = packet["whisperHistory"]
+        whisper_history0: Optional[list[_Utterance]] = packet["whisperHistory"]
         if whisper_history0 is not None:
             for whisper0 in whisper_history0:
                 whisper: Whisper = Whisper.compile(whisper0)
-                whisper_list: List[Whisper] = self.game_info.whisper_list
+                whisper_list: list[Whisper] = self.game_info.whisper_list
                 if len(whisper_list) == 0:
                     whisper_list.append(whisper)
                 else:
@@ -137,7 +137,7 @@ class TcpipClient:
                     break
             except socket.timeout:
                 pass
-            line_list: List[str] = line.split("\n", 1)
+            line_list: list[str] = line.split("\n", 1)
             for i in range(len(line_list) - 1):
                 if len(line_list[i]) > 0:
                     self._send_response(self._get_response(json.loads(line_list[i])))

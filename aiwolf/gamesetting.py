@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """gamesetting module."""
-from typing import Dict, TypedDict
+from typing import TypedDict
 
 from aiwolf.agent import Role
 
@@ -33,7 +33,7 @@ class _GameSetting(TypedDict):
     maxWhisperTurn: int
     playerNum: int
     randomSeed: int
-    roleNumMap: Dict[str, int]
+    roleNumMap: dict[str, int]
     talkOnFirstDay: bool
     timeLimit: int
     validateUtterance: bool
@@ -87,7 +87,7 @@ class GameSetting:
         self.random_seed: int = game_setting["randomSeed"]
         """The random seed."""
 
-        self.role_num_map: Dict[Role, int] = {Role[k]: v for k, v in game_setting["roleNumMap"].items()}
+        self.role_num_map: dict[Role, int] = {Role[k]: v for k, v in game_setting["roleNumMap"].items()}
         """The number of each role."""
 
         self.talk_on_first_day: bool = game_setting["talkOnFirstDay"]
