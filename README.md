@@ -11,5 +11,8 @@ Sample agent which uses this package is published at [AIWolfSharp/sample-python-
 * You can see a tutorial for making Python agent [here](http://aiwolf.org/en/howtowagent).
 ## Links
 * [Artificial Intelligence based Werewolf|Let's play "Werewolf" with AI!](http://aiwolf.org/en/)
-* [The 4th International AIWolf Contest](http://aiwolf.org/en/4th-international-aiwolf-contest)
-* [2022 IEEE Conference on Games (CoG) Competitions](https://ieee-cog.org/2022/#COMPETITIONS)
+## HISTORY
+* Version 1.3.0: Add Topic.RAW and RawContentBuilder for NL utterances.
+* Version 1.2.0: Create new property alive_agent_list in GameInfo.
+* Version 1.1.0: Create agent_list property in GameInfo.
+* Version 1.0.0: The initial release.
